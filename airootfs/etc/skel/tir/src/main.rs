@@ -196,6 +196,15 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .arg("/mnt/home/".to_owned() + &name)
         .status()
         .expect("Failed to create user home directory!");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("/mnt/boot/grub/grub.cfg")
+        .expect("Failed to open grub config file:");
+
+    if let Err(e) = writeln!(file, "GRUB_HIDDEN_TIMEOUT_QUIET=true") {
+        eprintln!("Couldn't write to grub config file: {}", e);
+    }
     println!("System installed. You may now reboot.");
     exit(0);
 }
