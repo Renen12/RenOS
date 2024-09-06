@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=Install_RenOS
+Exec=~/.local/bin/tir
+Type=Application
