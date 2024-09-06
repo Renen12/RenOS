@@ -1,0 +1,12 @@
+NAME="Ren-Os"
+PRETTY_NAME="Ren OS"
+ID=ren__
+BUILD_ID=rolling
+VERSION_ID=20240825.0.257728
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://github.com/Renen12"
+DOCUMENTATION_URL="https://github.com/Renen12"
+SUPPORT_URL="https://github.com/Renen12"
+BUG_REPORT_URL="https://github.com/Renen12"
+PRIVACY_POLICY_URL="https://github.com/Renen12"
+LOGO=redstar
