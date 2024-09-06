@@ -1,4 +1,4 @@
 [Desktop Entry]
 Name=Install_RenOS
-Exec=~/.local/bin/tir
+Exec=kgx -e doas ~/.local/bin/tir
 Type=Application
