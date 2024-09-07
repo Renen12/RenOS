@@ -94,6 +94,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
             "gnome-console",
             "vivaldi",
             "gnome-control-center",
+            "opendoas",
+            "usermod",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -207,6 +209,19 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         ])
         .status()
         .expect("Failed to set proper home directory permissions:");
+    Command::new("arch-chroot")
+        .args(["/mnt", "usermod", "-a", "-G", "wheel", &newname])
+        .status()
+        .expect("Failed adding user to the wheel group!");
+    fs::write(
+        "/etc/doas.conf",
+        "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel",
+    )
+    .expect("Failed to write to doas.conf!");
+    Command::new("chmod")
+        .args(["777", "/mnt/etc/doas.conf"])
+        .status()
+        .expect("Failed to change permissions of doas.conf!");
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
