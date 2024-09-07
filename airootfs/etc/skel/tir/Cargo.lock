@@ -3,5 +3,14 @@
 version = 3
 
 [[package]]
+name = "concatenator"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eccedb924abc45d78d0fbc599c0dc4aa34c49be213efe20c1f361f0d8165dc55"
+
+[[package]]
 name = "tir"
 version = "0.1.0"
+dependencies = [
+ "concatenator",
+]

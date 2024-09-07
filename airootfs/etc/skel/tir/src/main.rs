@@ -1,3 +1,4 @@
+use concatenator::cat;
 use std::process::exit;
 use std::{
     fs::{self, OpenOptions},
@@ -196,6 +197,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .arg("/mnt/home/".to_owned() + &name)
         .status()
         .expect("Failed to create user home directory!");
+    let newname = &name.clone().to_string();
+    Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "chown",
+            &cat(cat(name, ":".to_string()), newname.to_string()),
+            &cat("/home/", &newname),
+        ])
+        .status()
+        .expect("Failed to set proper home directory permissions:");
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
