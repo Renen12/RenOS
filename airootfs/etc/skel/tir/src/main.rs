@@ -217,10 +217,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel",
     )
     .expect("Failed to write to doas.conf!");
-    Command::new("chmod")
-        .args(["777", "/mnt/etc/doas.conf"])
-        .status()
-        .expect("Failed to change permissions of doas.conf!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
