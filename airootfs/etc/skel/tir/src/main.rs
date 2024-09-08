@@ -152,7 +152,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         name = String::from("renen");
     }
     Command::new("arch-chroot")
-        .args(["/mnt", "useradd", &name])
+        .args([
+            "/mnt",
+            "useradd",
+            "-m",
+            "-d",
+            cat("/home/", &name).as_str(),
+            "-G",
+            "wheel",
+            &name,
+        ])
         .status()
         .expect("Failed to create user.");
     println!("Changing password for {}", &name);
@@ -193,34 +202,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .args(["/mnt", "systemctl", "enable", "NetworkManager"])
         .status()
         .expect("Failed to enable NetworkManager.");
-    println!("Creating home directory.");
-    Command::new("mkdir")
-        .arg("/mnt/home/".to_owned() + &name)
-        .status()
-        .expect("Failed to create user home directory!");
-    let newname = &name.clone().to_string();
-    Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "chown",
-            &cat(cat(name, ":".to_string()), newname.to_string()),
-            &cat("/home/", &newname),
-        ])
-        .status()
-        .expect("Failed to set proper home directory permissions:");
-    Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "chmod",
-            "777",
-            cat("/home/", &newname.clone()).as_str(),
-        ])
-        .status()
-        .expect("Failed to set proper home directory permissions:");
-    Command::new("arch-chroot")
-        .args(["/mnt", "usermod", "-a", "-G", "wheel", &newname])
-        .status()
-        .expect("Failed adding user to the wheel group!");
     fs::write(
         "/etc/doas.conf",
         "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel",
