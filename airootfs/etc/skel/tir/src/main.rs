@@ -95,7 +95,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
             "vivaldi",
             "gnome-control-center",
             "opendoas",
-            "usermod",
         ])
         .status()
         .expect("Failed to install base system:");
