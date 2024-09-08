@@ -209,6 +209,15 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .status()
         .expect("Failed to set proper home directory permissions:");
     Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "chmod",
+            "777",
+            cat("/home/", &newname.clone()).as_str(),
+        ])
+        .status()
+        .expect("Failed to set proper home directory permissions:");
+    Command::new("arch-chroot")
         .args(["/mnt", "usermod", "-a", "-G", "wheel", &newname])
         .status()
         .expect("Failed adding user to the wheel group!");
