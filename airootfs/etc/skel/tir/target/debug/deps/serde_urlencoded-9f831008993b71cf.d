@@ -1,0 +1,11 @@
+/home/olle/Documents/RenOS/airootfs/etc/skel/tir/target/debug/deps/libserde_urlencoded-9f831008993b71cf.rmeta: /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/lib.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/de.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/mod.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/key.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/pair.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/part.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/value.rs
+
+/home/olle/Documents/RenOS/airootfs/etc/skel/tir/target/debug/deps/serde_urlencoded-9f831008993b71cf.d: /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/lib.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/de.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/mod.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/key.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/pair.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/part.rs /home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/value.rs
+
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/lib.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/de.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/mod.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/key.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/pair.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/part.rs:
+/home/olle/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde_urlencoded-0.5.5/src/ser/value.rs:
