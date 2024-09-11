@@ -95,6 +95,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
             "vivaldi",
             "gnome-control-center",
             "opendoas",
+            "bash",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -222,11 +223,12 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         ])
         .status()
         .expect("Failed to clone the yay git repo:");
+    fs::write("/tmp/yay.sh", "cd /tmp/yay && makepkg -si")
+        .expect("Failed to create temporary yay script:");
     Command::new("arch-chroot")
-        .current_dir("/tmp/yay")
-        .args(["/mnt", "makepkg -si"])
+        .args(["/mnt", "bash", "/tmp/yay.sh"])
         .status()
-        .expect("Failed installing yay:");
+        .expect("Failed to install yay:");
     println!("System installed. You may now reboot.");
     exit(0);
 }
