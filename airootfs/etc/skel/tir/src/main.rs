@@ -203,11 +203,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .args(["/mnt", "systemctl", "enable", "NetworkManager"])
         .status()
         .expect("Failed to enable NetworkManager.");
-    fs::write(
-        "/etc/doas.conf",
-        "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel",
-    )
-    .expect("Failed to write to doas.conf!");
+    fs::write("/mnt/etc/doas.conf", "permit persist :wheel")
+        .expect("Failed to write to doas.conf!");
     println!("Installing yay!");
     Command::new("arch-chroot")
         .args(["/mnt", "pacman", "-S", "--needed", "git", "base-devel"])
