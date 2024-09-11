@@ -207,6 +207,26 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel",
     )
     .expect("Failed to write to doas.conf!");
+    println!("Installing yay!");
+    Command::new("arch-chroot")
+        .args(["/mnt", "pacman", "-S", "--needed", "git", "base-devel"])
+        .status()
+        .expect("Failed to install git and base-devel:");
+    Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "git",
+            "clone",
+            "https://aur.archlinux.org/yay-bin.git",
+            "/tmp/yay",
+        ])
+        .status()
+        .expect("Failed to clone the yay git repo:");
+    Command::new("arch-chroot")
+        .current_dir("/tmp/yay")
+        .args(["/mnt", "makepkg -si"])
+        .status()
+        .expect("Failed installing yay:");
     println!("System installed. You may now reboot.");
     exit(0);
 }
