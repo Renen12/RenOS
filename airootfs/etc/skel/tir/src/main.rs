@@ -215,7 +215,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
             "git",
             "clone",
             "https://aur.archlinux.org/yay-bin.git",
-            "/tmp/yay-bin",
+            "/mnt/tmp/yay-bin",
         ])
         .status()
         .expect("Failed to clone the yay git repo:");
