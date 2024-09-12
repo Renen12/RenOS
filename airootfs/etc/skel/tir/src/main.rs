@@ -1,5 +1,8 @@
 use concatenator::cat;
+use std::env;
 use std::process::exit;
+use std::thread::sleep;
+use std::time::Duration;
 use std::{
     fs::{self, OpenOptions},
     io::{self, Write},
@@ -210,18 +213,18 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .args(["/mnt", "pacman", "-S", "--needed", "git", "base-devel"])
         .status()
         .expect("Failed to install git and base-devel:");
-    Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "git",
-            "clone",
-            "https://aur.archlinux.org/yay-bin.git",
-            "/tmp/yay",
-        ])
+    let cmd = Command::new("arch-chroot")
+        .args(["git", "clone", "https://aur.archlinux.org/yay-bin.git"])
         .status()
         .expect("Failed to clone the yay git repo:");
-    fs::write("/tmp/yay.sh", "cd /tmp/yay && makepkg -si")
-        .expect("Failed to create temporary yay script:");
+    let currentdir = env::current_dir().unwrap();
+    let currentdir = currentdir.to_str().unwrap();
+    sleep(Duration::new(5, 0));
+    fs::write(
+        "/tmp/yay.sh",
+        "cd ".to_owned() + currentdir + "/yay-bin" + " && makepkg -si",
+    )
+    .expect("Failed to create temporary yay script:");
     Command::new("arch-chroot")
         .args(["/mnt", "bash", "/tmp/yay.sh"])
         .status()
