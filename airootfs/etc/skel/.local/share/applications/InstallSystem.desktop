@@ -2,3 +2,4 @@
 Name=Install_RenOS
 Exec=kgx -e "bash -c doas /home/live/.local/bin/tir"
 Type=Application
+NoDisplay=true
