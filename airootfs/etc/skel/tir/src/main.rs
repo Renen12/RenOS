@@ -219,14 +219,14 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         ])
         .status()
         .expect("Failed to clone the yay git repo:");
-    fs::write("/mnt/tmp/yay.sh", "cd /yay-bin && makepkg -si")
+    fs::write("/mnt/yay.sh", "cd /yay-bin && makepkg -si")
         .expect("Failed to create temporary yay script:");
     Command::new("chmod")
-        .args(["777", "/mnt/tmp/yay.sh"])
+        .args(["777", "/mnt/yay.sh"])
         .status()
         .expect("Failed setting yay script permissions!");
     Command::new("arch-chroot")
-        .args(["/mnt", "bash", "/tmp/yay.sh"])
+        .args(["/mnt", "bash", "/yay.sh"])
         .status()
         .expect("Failed to install yay:");
     println!("System installed. You may now reboot.");
