@@ -215,12 +215,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
             "git",
             "clone",
             "https://aur.archlinux.org/yay-bin.git",
-            "/mnt/tmp/yay-bin",
+            "/mnt/yay-bin",
         ])
         .status()
         .expect("Failed to clone the yay git repo:");
-    fs::write("/mnt/tmp/yay.sh", "cd /tmp/yay-bin && makepkg -si")
+    fs::write("/mnt/tmp/yay.sh", "cd /yay-bin && makepkg -si")
         .expect("Failed to create temporary yay script:");
+    Command::new("chmod")
+        .args(["777", "/mnt/tmp/yay.sh"])
+        .status()
+        .expect("Failed setting yay script permissions!");
     Command::new("arch-chroot")
         .args(["/mnt", "bash", "/tmp/yay.sh"])
         .status()
