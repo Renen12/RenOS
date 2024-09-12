@@ -212,23 +212,18 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .expect("Failed to install git and base-devel:");
     Command::new("arch-chroot")
         .args([
-            "git",
-            "clone",
-            "https://aur.archlinux.org/yay-bin.git",
-            "/mnt/yay-bin",
+            "/mnt",
+            "bash",
+            "-c",
+            "git clone https://aur.archlinux.org/yay.git",
+            "&&",
+            "cd yay",
+            "&&",
+            "makepkg -si
+",
         ])
         .status()
-        .expect("Failed to clone the yay git repo:");
-    fs::write("/mnt/yay.sh", "cd /yay-bin && makepkg -si")
-        .expect("Failed to create temporary yay script:");
-    Command::new("chmod")
-        .args(["777", "/mnt/yay.sh"])
-        .status()
-        .expect("Failed setting yay script permissions!");
-    Command::new("arch-chroot")
-        .args(["/mnt", "bash", "/yay.sh"])
-        .status()
-        .expect("Failed to install yay:");
+        .expect("Failed to install yay");
     println!("System installed. You may now reboot.");
     exit(0);
 }
