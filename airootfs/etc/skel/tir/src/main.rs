@@ -37,7 +37,7 @@ fn do_all_the_things(skippartitioning: bool) {
         .expect("Failed getting efi partition name from stdin.");
     let efipart = efipart.replace("\n", "");
     format_efi(&efipart);
-    install_system(&syspart, &efipart, &swappart);
+    install_system(&syspart, &efipart, &swappart).unwrap();
 }
 fn partition_drive(drive: &String) {
     Command::new("/sbin/cfdisk")
