@@ -63,7 +63,7 @@ fn format_efi(efipart: &String) {
         .status()
         .expect("Failed to format efi partition.");
 }
-fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
+fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io::Result<()> {
     Command::new("mount")
         .args([rootpart, "/mnt"])
         .status()
@@ -211,19 +211,23 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) {
         .status()
         .expect("Failed to install git and base-devel:");
     Command::new("arch-chroot")
-        .args([
+        .args(&[
             "/mnt",
-            "bash",
-            "-c",
-            "git clone https://aur.archlinux.org/yay.git",
-            "&&",
-            "cd yay",
-            "&&",
-            "makepkg -si
-",
+            "git",
+            "clone",
+            "https://aur.archlinux.org/aura-bin.git",
+            "/tmp/aura-bin",
         ])
-        .status()
-        .expect("Failed to install yay");
+        .status()?;
+
+    Command::new("arch-chroot")
+        .args(&[
+            "/mnt",
+            "sh",
+            "-c",
+            "cd /tmp/aura-bin && makepkg -si --noconfirm",
+        ])
+        .status()?;
     println!("System installed. You may now reboot.");
     exit(0);
 }
