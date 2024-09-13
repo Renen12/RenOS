@@ -224,7 +224,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            "cd /usr/local/src/aura-bin && makepkg -si --noconfirm",
+            "cd /usr/local/src/aura-bin && doas -u nobody makepkg -si --noconfirm",
         ])
         .status()?;
     println!("System installed. You may now reboot.");
