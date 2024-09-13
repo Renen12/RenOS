@@ -205,20 +205,19 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable NetworkManager.");
     fs::write("/mnt/etc/doas.conf", "permit persist :wheel")
         .expect("Failed to write to doas.conf!");
-    println!("Installing yay!");
+    println!("Installing aura!");
     Command::new("arch-chroot")
         .args(["/mnt", "pacman", "-S", "--needed", "git", "base-devel"])
         .status()
         .expect("Failed to install git and base-devel:");
-    Command::new("arch-chroot")
-        .args(&[
-            "/mnt",
-            "git",
+    Command::new("git")
+        .args([
             "clone",
             "https://aur.archlinux.org/aura-bin.git",
-            "/tmp/aura-bin",
+            "/mnt/tmp/aura-bin",
         ])
-        .status()?;
+        .status()
+        .expect("Failed to clone the aura git repo!");
 
     Command::new("arch-chroot")
         .args(&[
