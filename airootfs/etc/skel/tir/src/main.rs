@@ -214,7 +214,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .args([
             "clone",
             "https://aur.archlinux.org/aura-bin.git",
-            "/mnt/tmp/aura-bin",
+            "/mnt/usr/local/src/aura-bin",
         ])
         .status()
         .expect("Failed to clone the aura git repo!");
@@ -224,7 +224,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            "cd /tmp/aura-bin && makepkg -si --noconfirm",
+            "cd /usr/local/src/aura-bin && makepkg -si --noconfirm",
         ])
         .status()?;
     println!("System installed. You may now reboot.");
