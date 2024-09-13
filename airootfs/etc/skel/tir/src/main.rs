@@ -203,7 +203,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .args(["/mnt", "systemctl", "enable", "NetworkManager"])
         .status()
         .expect("Failed to enable NetworkManager.");
-    fs::write("/mnt/etc/doas.conf", "permit persist :wheel")
+    fs::write("/mnt/etc/doas.conf", "permit persist :wheel \n")
         .expect("Failed to write to doas.conf!");
     println!("Installing aura!");
     Command::new("arch-chroot")
