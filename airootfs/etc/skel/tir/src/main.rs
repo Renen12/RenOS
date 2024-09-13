@@ -218,7 +218,14 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to clone the aura git repo!");
-
+    Command::new("arch-chroot")
+        .args(["/mnt", "chown", "nobody", "/usr/local/src/aura-bin"])
+        .status()
+        .expect("Failed to set aura permissions!");
+    Command::new("arch-chroot")
+        .args(["/mnt", "chmod", "777", "/usr/local/src/aura-bin"])
+        .status()
+        .expect("Failed to set aura permissions!");
     Command::new("arch-chroot")
         .args(&[
             "/mnt",
