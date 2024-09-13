@@ -227,14 +227,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .status()
         .expect("Failed to set aura permissions!");
     Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "sh",
-            "-c",
-            "chmod",
-            "777",
-            "/usr/local/src/aura-bin/*",
-        ])
+        .args(["/mnt", "sh", "-c chmod 777 /usr/local/src/aura-bin/*"])
         .status()
         .expect("Failed to set aura permissions!");
     Command::new("arch-chroot")
