@@ -172,7 +172,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to change password for user.");
     println!("Installing grub and efibootmgr.");
     Command::new("arch-chroot")
-        .args(["/mnt", "pacman", "-S", "grub", "efibootmgr"])
+        .args(["/mnt", "pacman", "-S", "--noconfirm", "grub", "efibootmgr"])
         .status()
         .expect("Failed to install grub and efibootmgr package:");
     Command::new("arch-chroot")
@@ -207,37 +207,18 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to write to doas.conf!");
     println!("Installing aura!");
     Command::new("arch-chroot")
-        .args(["/mnt", "pacman", "-S", "--needed", "git", "base-devel"])
+        .args([
+            "/mnt",
+            "pacman",
+            "-S",
+            "--needed",
+            "--noconfirm",
+            "git",
+            "base-devel",
+        ])
         .status()
         .expect("Failed to install git and base-devel:");
-    Command::new("git")
-        .args([
-            "clone",
-            "https://aur.archlinux.org/aura-bin.git",
-            "/mnt/usr/local/src/aura-bin",
-        ])
-        .status()
-        .expect("Failed to clone the aura git repo!");
-    Command::new("arch-chroot")
-        .args(["/mnt", "chown", "nobody", "/usr/local/src/aura-bin"])
-        .status()
-        .expect("Failed to set aura permissions!");
-    Command::new("arch-chroot")
-        .args(["/mnt", "chmod", "777", "/usr/local/src/aura-bin"])
-        .status()
-        .expect("Failed to set aura permissions!");
-    Command::new("arch-chroot")
-        .args(["/mnt", "sh", "-c chmod 777 /usr/local/src/aura-bin/*"])
-        .status()
-        .expect("Failed to set aura permissions!");
-    Command::new("arch-chroot")
-        .args(&[
-            "/mnt",
-            "sh",
-            "-c",
-            "cd /usr/local/src/aura-bin && doas -u nobody makepkg -si --noconfirm",
-        ])
-        .status()?;
+    fs::copy("/home/live/aura", "/mnt/usr/bin").expect("Failed copying aura binary!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
