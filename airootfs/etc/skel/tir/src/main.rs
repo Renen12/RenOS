@@ -218,7 +218,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install git and base-devel:");
-    fs::copy("/home/live/aura", "/mnt/usr/bin").expect("Failed copying aura binary!");
+    fs::copy("/home/live/aura", "/mnt/usr/bin/aura").expect("Failed copying aura binary!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
