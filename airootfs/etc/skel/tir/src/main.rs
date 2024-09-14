@@ -225,7 +225,13 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     )
     .expect("Failed to write temporary yay script.");
     Command::new("arch-chroot")
-        .args(["/mnt", "su", &name, "-c", "\"bash $HOME/yay.sh\""])
+        .args([
+            "/mnt",
+            "su",
+            &name,
+            "-c",
+            format!("\"bash {}/yay.sh\"", "/home/".to_owned() + &name).as_str(),
+        ])
         .status()
         .expect("Failed to install yay");
 
