@@ -218,7 +218,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install git and base-devel:");
-    fs::copy("/home/live/aura", "/mnt/usr/bin/aura").expect("Failed copying aura binary!");
+    fs::write(
+        "/mnt/usr/local/src/yay.sh",
+        "git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si
+",
+    )
+    .expect("Failed to write temporary yay script.");
+    Command::new("arch-chroot")
+        .args(["/mnt", "su", &name, "-c", "\"bash /usr/local/src/yay.sh\""])
+        .status()
+        .expect("Failed to install yay");
     println!("System installed. You may now reboot.");
     exit(0);
 }
