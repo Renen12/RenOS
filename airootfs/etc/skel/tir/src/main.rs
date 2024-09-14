@@ -205,7 +205,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable NetworkManager.");
     fs::write("/mnt/etc/doas.conf", "permit persist :wheel \n")
         .expect("Failed to write to doas.conf!");
-    println!("Installing aura!");
+    println!("Installing yay!");
     Command::new("arch-chroot")
         .args([
             "/mnt",
@@ -219,13 +219,13 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .status()
         .expect("Failed to install git and base-devel:");
     fs::write(
-        "/mnt/usr/local/src/yay.sh",
+        "/mnt/home/".to_owned() + &name + "/yay.sh",
         "git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin && makepkg -si
 ",
     )
     .expect("Failed to write temporary yay script.");
     Command::new("arch-chroot")
-        .args(["/mnt", "su", &name, "-c", "\"bash /usr/local/src/yay.sh\""])
+        .args(["/mnt", "su", &name, "-c", "\"bash $HOME/yay.sh\""])
         .status()
         .expect("Failed to install yay");
 
