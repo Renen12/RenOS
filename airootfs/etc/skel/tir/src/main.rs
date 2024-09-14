@@ -230,6 +230,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "su",
             &name,
             "-c",
+            format!("\'chown {} {} \'", &name, "/home/".to_owned() + &name).as_str(),
+        ])
+        .status()
+        .expect("Failed to set permissions for user home dir.");
+    Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "su",
+            &name,
+            "-c",
             format!("\"bash {}/yay.sh\"", "/home/".to_owned() + &name).as_str(),
         ])
         .status()
