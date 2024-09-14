@@ -228,6 +228,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .args(["/mnt", "su", &name, "-c", "\"bash /usr/local/src/yay.sh\""])
         .status()
         .expect("Failed to install yay");
+
     println!("System installed. You may now reboot.");
     exit(0);
 }
