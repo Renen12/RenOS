@@ -220,6 +220,15 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to install git and base-devel");
     Command::new("arch-chroot")
         .args([
+            "/mnt",
+            "sh",
+            "-c",
+            format!("echo \"{} ALL=(ALL:ALL) ALL\" >> /etc/sudoers", &name).as_str(),
+        ])
+        .status()
+        .expect("Failed to add user to the sudoers file!");
+    Command::new("arch-chroot")
+        .args([
             "-u",
             &name,
             "/mnt",
