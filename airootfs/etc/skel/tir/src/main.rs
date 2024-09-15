@@ -205,6 +205,30 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable NetworkManager.");
     fs::write("/mnt/etc/doas.conf", "permit persist :wheel \n")
         .expect("Failed to write to doas.conf!");
+    println!("Installing yay!");
+    Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "pacman",
+            "-S",
+            "--noconfirm",
+            "--needed",
+            "base-devel",
+            "git",
+        ])
+        .status()
+        .expect("Failed to install git and base-devel");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "sh",
+            "-c",
+            "git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si",
+        ])
+        .status()
+        .expect("Failed to install yay");
     println!("System installed. You may now reboot.");
     exit(0);
 }
