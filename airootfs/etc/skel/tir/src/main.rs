@@ -141,6 +141,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "opendoas",
             "bash",
             "steam",
+            "gnome-backgrounds",
         ])
         .status()
         .expect("Failed to install base system:");
