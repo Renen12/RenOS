@@ -332,8 +332,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install yay");
-    fs::remove_dir_all(format!("/home/{}/yay", &name))
-        .expect("Failed to delete the yay build directory");
     println!("Do you have the Asus USB-AC58 WiFi adapter? [y/N]");
     let mut answer = String::new();
     io::stdin().read_line(&mut answer).unwrap();
