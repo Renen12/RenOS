@@ -120,9 +120,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .arg(swappart)
         .status()
         .expect("Failed to swapon swap partition.");
-    println!("Copying pacman.conf!");
-    fs::copy("/etc/pacman.conf", "/mnt/etc/pacman.conf")
-        .expect("Failed to copy pacman.conf to the installed system!");
     println!("Installing base system.");
     Command::new("pacstrap")
         .args([
