@@ -176,7 +176,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     println!("Do you want to view the available locales? [Y/n]");
     let mut answer = String::new();
     io::stdin().read_line(&mut answer).unwrap();
-    let answer = answer.replace("\n", "").replace(" ", "").to_lowercase();
+    let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
     if answer == "Y" {
         let locale = select_locale(true);
         let locale = locale.as_str();
