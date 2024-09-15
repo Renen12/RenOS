@@ -225,7 +225,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            "git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si",
+            format!(
+                "doas chown {} . && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si", &name
+            ).as_str(),
         ])
         .status()
         .expect("Failed to install yay");
