@@ -226,7 +226,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "sh",
             "-c",
             format!(
-                "doas chown {} . && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si", &name
+                "cd /home/{} && doas chown {} . && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si", &name, &name
             ).as_str(),
         ])
         .status()
