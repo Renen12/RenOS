@@ -5,7 +5,29 @@ use std::{
     io::{self, Write},
     process::Command,
 };
-
+fn install_graphics(typeofgpu: String) {
+    if typeofgpu == "NVIDIA" {
+        Command::new("arch-chroot")
+            .args(["/mnt", "pacman", "-S", "nvidia-open"])
+            .status()
+            .expect("Failed to install nvidia graphics drivers");
+    } else if typeofgpu == "INTEL" {
+        Command::new("arch-chroot")
+            .args(["/mnt", "pacman", "-S", "mesa"])
+            .status()
+            .expect("Failed to install intel graphics drivers");
+    } else if typeofgpu == "AMD" {
+        Command::new("arch-chroot")
+            .args(["/mnt", "pacman", "-S", "mesa"])
+            .status()
+            .expect("Failed to install amd graphics drivers");
+    } else if typeofgpu == "NONE" {
+        println!("Why do you not have a graphics card?");
+    } else {
+        println!("{} is not a valid option.", typeofgpu);
+        install_graphics(typeofgpu);
+    }
+}
 fn select_locale(view: bool) -> String {
     if view == true {
         println!(
@@ -98,6 +120,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .arg(swappart)
         .status()
         .expect("Failed to swapon swap partition.");
+    println!("Copying pacman.conf!");
+    fs::copy("/etc/pacman.conf", "/mnt/etc/pacman.conf")
+        .expect("Failed to copy pacman.conf to the installed system!");
     println!("Installing base system.");
     Command::new("pacstrap")
         .args([
@@ -118,6 +143,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "gnome-control-center",
             "opendoas",
             "bash",
+            "steam",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -308,6 +334,33 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install yay");
+    fs::remove_dir_all("./yay").expect("Failed to delete the yay build directory");
+    println!("Do you have the Asus USB-AC58 WiFi adapter? [y/N]");
+    let mut answer = String::new();
+    io::stdin().read_line(&mut answer).unwrap();
+    let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
+    if answer == "Y" {
+        Command::new("arch-chroot")
+            .args(["/mnt", "pacman", "-S", "dkms"])
+            .status()
+            .expect("Failed to install dkms");
+        Command::new("arch-chroot")
+            .args([
+                "-u",
+                &name,
+                "/mnt",
+                "yay",
+                "-S",
+                "rtl88x2bu-cilynx-dkms-git",
+            ])
+            .status()
+            .expect("Failed to install the rtl88x2bu drivers");
+    }
+    println!("What graphics card do you have? (Nvidia, Intel, Amd, None)");
+    let mut gpu = String::new();
+    io::stdin().read_line(&mut gpu).unwrap();
+    let gpu = gpu.replace("\n", "").replace(" ", "").to_uppercase();
+    install_graphics(gpu);
     println!("System installed. You may now reboot.");
     exit(0);
 }
