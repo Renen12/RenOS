@@ -5,6 +5,28 @@ use std::{
     io::{self, Write},
     process::Command,
 };
+
+fn select_locale(view: bool) -> String {
+    if view == true {
+        println!(
+            "{}",
+            fs::read_to_string("/etc/locale.gen")
+                .expect("Failed to get the contents of /etc/locale.gen")
+                .replace("#", "")
+        );
+        println!("What locale do you want to use?");
+        let mut answer = String::new();
+        io::stdin().read_line(&mut answer).unwrap();
+        let answer = answer.replace("\n", "");
+        return answer;
+    } else {
+        println!("What locale do you want to use?");
+        let mut answer = String::new();
+        io::stdin().read_line(&mut answer).unwrap();
+        let answer = answer.replace("\n", "");
+        return answer;
+    }
+}
 fn do_all_the_things(skippartitioning: bool) {
     if !skippartitioning {
         println!("What drive do you want to install to? e.g /dev/sda");
@@ -108,12 +130,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .arg("/tmp/fstab.sh")
         .status()
         .expect("Executing temporary fstab script failed!");
+    println!("What timezone do you want to use? (e.g Europe/Stockholm, Time zones are in /usr/share/zoneinfo)");
+    let mut timezone = String::new();
+    io::stdin().read_line(&mut timezone).unwrap();
+    let timezone = timezone.replace("\n", "").replace(" ", "");
     Command::new("arch-chroot")
         .args([
             "/mnt",
             "ln",
             "-sf",
-            "/usr/share/zoneinfo/Europe/Stockholm",
+            format!("/usr/share/zoneinfo/{}", timezone).as_str(),
             "/etc/localtime",
         ])
         .status()
@@ -123,13 +149,45 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .append(true)
         .open("/mnt/etc/locale.gen")
         .expect("Failed to open locale.gen file:");
-
-    if let Err(e) = writeln!(file, "en_GB.UTF-8 UTF-8") {
-        eprintln!("Couldn't write to locale file: {}", e);
+    println!("Do you want to view the available locales? [Y/n]");
+    let mut answer = String::new();
+    io::stdin().read_line(&mut answer).unwrap();
+    let answer = answer.replace("\n", "").replace(" ", "").to_lowercase();
+    if answer == "Y" {
+        let locale = select_locale(true);
+        let locale = locale.as_str();
+        if let Err(e) = writeln!(file, "{}", locale) {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
+    } else if answer != "N" {
+        let locale = select_locale(true);
+        let locale = locale.as_str();
+        if let Err(e) = writeln!(file, "{}", locale) {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
+    } else {
+        let locale = select_locale(false);
+        let locale = locale.as_str();
+        if let Err(e) = writeln!(file, "{}", locale) {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
     }
-    fs::write("/mnt/etc/locale.conf", "LANG=en_GB.UTF-8")
+    println!("What language locale do you want to use? (same as the other locale but omitting the UTF-8 at the end (e.g en_GB.UTF-8 instead of en_GB.UTF-8 UTF-8)");
+    let mut langlocale = String::new();
+    io::stdin().read_line(&mut langlocale).unwrap();
+    let langlocale = langlocale.replace("\n", "");
+    fs::write("/mnt/etc/locale.conf", format!("LANG={}", langlocale))
         .expect("Failed to write to locale language configuration file:");
-    fs::write("/mnt/etc/vconsole.conf", "KEYMAP=sv-latin1")
+    println!("Press enter or any other key AND enter to view the available keymaps...");
+    Command::new("localectl")
+        .args(["list-keymaps"])
+        .status()
+        .expect("Failed to run localectl to see available keymaps");
+    println!("What keyboard layout do you want to use for the console? (This won't apply to the installed desktop enviroment)");
+    let mut keymap = String::new();
+    io::stdin().read_line(&mut keymap).unwrap();
+    let keymap = keymap.replace("\n", "");
+    fs::write("/mnt/etc/vconsole.conf", format!("KEYMAP={}", keymap))
         .expect("Failed to write to console keyboard configuration file:");
     println!("What hostname do you want to use?");
     let mut answer = String::new();
@@ -170,6 +228,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .args(["/mnt", "passwd", &name])
         .status()
         .expect("Failed to change password for user.");
+    fs::copy("/etc/os-release", "/mnt/etc/os-release")
+        .expect("Failed to copy os release information");
+
     println!("Installing grub and efibootmgr.");
     Command::new("arch-chroot")
         .args(["/mnt", "pacman", "-S", "--noconfirm", "grub", "efibootmgr"])
@@ -185,6 +246,13 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install bootloader:");
+    fs::write(
+        "/mnt/etc/default/grub",
+        fs::read_to_string("/mnt/etc/default/grub")
+            .expect("Failed to read grub config file")
+            .replace("Arch", "RenOS"),
+    )
+    .expect("Failed setting grub branding");
     Command::new("arch-chroot")
         .args(["/mnt", "grub-mkconfig", "-o", "/boot/grub/grub.cfg"])
         .status()
