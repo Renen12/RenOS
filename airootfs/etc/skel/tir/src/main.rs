@@ -349,6 +349,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
                 "yay",
                 "-S",
                 "rtl88x2bu-cilynx-dkms-git",
+                "--noconfirm",
             ])
             .status()
             .expect("Failed to install the rtl88x2bu drivers");
@@ -358,6 +359,55 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     io::stdin().read_line(&mut gpu).unwrap();
     let gpu = gpu.replace("\n", "").replace(" ", "").to_uppercase();
     install_graphics(gpu);
+    println!("Installing gnome goodies!");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "yay",
+            "-S",
+            "gnome-shell-extension-clipboard-indicator-git",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the gnome clipboard indicator extension");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "yay",
+            "-S",
+            "gnome-shell-extension-pop-shell-git",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the pop-shell tiling gnome extension");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "yay",
+            "-S",
+            "gnome-shell-extension-appindicator-git",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the appindicator support gnome extension");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "yay",
+            "-S",
+            "gnome-shell-extension-hanabi-git",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the hanabi(live wallpaper) extension for gnome");
     println!("System installed. You may now reboot.");
     exit(0);
 }
