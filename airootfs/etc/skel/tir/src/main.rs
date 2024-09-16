@@ -25,7 +25,7 @@ fn install_graphics(typeofgpu: String) {
         println!("Why do you not have a graphics card?");
     } else {
         println!("{} is not a valid option.", typeofgpu);
-        install_graphics(typeofgpu);
+        install_graphics(String::from("INTEL"));
     }
 }
 fn select_locale(view: bool) -> String {
@@ -142,6 +142,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "bash",
             "steam",
             "gnome-backgrounds",
+            "github-cli",
+            "flatpak",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -373,17 +375,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .status()
         .expect("Failed to install the gnome clipboard indicator extension");
     Command::new("arch-chroot")
-        .args([
-            "-u",
-            &name,
-            "/mnt",
-            "yay",
-            "-S",
-            "gnome-shell-extension-pop-shell-git",
-            "--noconfirm",
-        ])
+        .args(["/mnt", "pacman -S clapper --noconfirm"])
         .status()
-        .expect("Failed to install the pop-shell tiling gnome extension");
+        .expect("Failed to install clapper for better hanabi performance");
     Command::new("arch-chroot")
         .args([
             "-u",
@@ -408,6 +402,18 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install the hanabi(live wallpaper) extension for gnome");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "yay",
+            "-S",
+            "zed-preview-bin",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the zed code editor");
     println!("System installed. You may now reboot.");
     exit(0);
 }
