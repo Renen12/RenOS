@@ -333,7 +333,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
     if answer == "Y" {
         Command::new("arch-chroot")
-            .args(["/mnt", "pacman", "-S", "dkms"])
+            .args(["/mnt", "pacman", "-S", "dkms", "--noconfirm"])
             .status()
             .expect("Failed to install dkms");
         Command::new("arch-chroot")
