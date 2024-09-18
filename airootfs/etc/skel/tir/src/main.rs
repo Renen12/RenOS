@@ -414,6 +414,17 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install the zed code editor");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "sh",
+            "-c",
+            "gnome-extensions enable appindicatorsupport@rgcjonas@gmail.com && gnome-extensions enable clipboard-indicator@tudmotu.com",
+        ])
+        .status()
+        .expect("Failed to enable gnome goodies!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
