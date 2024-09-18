@@ -299,7 +299,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable NetworkManager.");
     fs::write("/mnt/etc/doas.conf", "permit persist :wheel \n")
         .expect("Failed to write to doas.conf!");
-    println!("Installing yay!");
+    println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
             "/mnt",
@@ -388,7 +388,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "-u",
             &name,
             "/mnt",
-            "yay",
+            "aur",
             "-S",
             "gnome-shell-extension-hanabi-git",
             "--noconfirm",
@@ -400,7 +400,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "-u",
             &name,
             "/mnt",
-            "yay",
+            "aur",
             "-S",
             "zed-preview-bin",
             "--noconfirm",
