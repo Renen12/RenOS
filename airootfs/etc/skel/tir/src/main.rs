@@ -321,19 +321,12 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to add user to the sudoers file!");
+    fs::copy("/usr/local/bin/aur", "/mnt/usr/bin/aur").expect("Failed to copy the aur helper!");
     Command::new("arch-chroot")
-        .args([
-            "-u",
-            &name,
-            "/mnt",
-            "sh",
-            "-c",
-            format!(
-                "export HOME=/home/{} && cd /home/{} && doas chown {} . && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si", &name, &name, &name
-            ).as_str(),
-        ])
+        .args(["/mnt", "chmod", "777", "/usr/bin/aur"])
         .status()
-        .expect("Failed to install yay");
+        .expect("Failed to set permission for the aur binary");
+
     println!("Do you have the Asus USB-AC58 WiFi adapter? [y/N]");
     let mut answer = String::new();
     io::stdin().read_line(&mut answer).unwrap();
@@ -348,7 +341,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
                 "-u",
                 &name,
                 "/mnt",
-                "yay",
+                "aur",
                 "-S",
                 "rtl88x2bu-cilynx-dkms-git",
                 "--noconfirm",
@@ -367,7 +360,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "-u",
             &name,
             "/mnt",
-            "yay",
+            "aur",
             "-S",
             "gnome-shell-extension-clipboard-indicator-git",
             "--noconfirm",
@@ -383,7 +376,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "-u",
             &name,
             "/mnt",
-            "yay",
+            "aur",
             "-S",
             "gnome-shell-extension-appindicator-git",
             "--noconfirm",
