@@ -414,7 +414,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            "gnome-extensions enable appindicatorsupport@rgcjonas@gmail.com && gnome-extensions enable clipboard-indicator@tudmotu.com",
+            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && gnome-extensions enable appindicatorsupport@rgcjonas@gmail.com && gnome-extensions enable clipboard-indicator@tudmotu.com", &name, &name, &name).as_str(),
         ])
         .status()
         .expect("Failed to enable gnome goodies!");
