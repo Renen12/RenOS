@@ -39,13 +39,13 @@ fn select_locale(view: bool) -> String {
         println!("What locale do you want to use?");
         let mut answer = String::new();
         io::stdin().read_line(&mut answer).unwrap();
-        let answer = answer.replace("\n", "");
+        let answer = answer.replace("\n", "") + ".UTF-8" + " UTF-8";
         return answer;
     } else {
         println!("What locale do you want to use?");
         let mut answer = String::new();
         io::stdin().read_line(&mut answer).unwrap();
-        let answer = answer.replace("\n", "");
+        let answer = answer.replace("\n", "") + ".UTF-8" + " UTF-8";
         return answer;
     }
 }
@@ -177,7 +177,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to open locale.gen file:");
     println!("Do you want to view the available locales? [Y/n]");
     let mut answer = String::new();
-    io::stdin().read_line(&mut answer).unwrap();
+    std::io::stdin().read_line(&mut answer).unwrap();
     let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
     if answer == "Y" {
         let locale = select_locale(true);
@@ -198,13 +198,14 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             eprintln!("Couldn't write to locale file: {}", e);
         }
     }
-    println!("What language locale do you want to use? (same as the other locale but omitting the UTF-8 at the end (e.g en_GB.UTF-8 instead of en_GB.UTF-8 UTF-8)");
+    println!("What language locale do you want to use?");
     let mut langlocale = String::new();
     io::stdin().read_line(&mut langlocale).unwrap();
-    let langlocale = langlocale.replace("\n", "");
+    let langlocale = langlocale.replace("\n", "") + ".UTF-8";
     fs::write("/mnt/etc/locale.conf", format!("LANG={}", langlocale))
         .expect("Failed to write to locale language configuration file:");
-    println!("Press enter or any other key AND enter to view the available keymaps...");
+    println!("Press enter to view the available keymaps...");
+    io::stdin().read_line(&mut String::new()).unwrap();
     Command::new("localectl")
         .args(["list-keymaps"])
         .status()
@@ -256,7 +257,11 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to change password for user.");
     fs::copy("/etc/os-release", "/mnt/etc/os-release")
         .expect("Failed to copy os release information");
-
+    fs::write(
+        "/mnt/etc/lsb-release",
+        "DISTRIB_ID=\"ren__\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
+    )
+    .expect("Failed to write lsb_release information");
     println!("Installing grub and efibootmgr.");
     Command::new("arch-chroot")
         .args(["/mnt", "pacman", "-S", "--noconfirm", "grub", "efibootmgr"])
