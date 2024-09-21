@@ -210,6 +210,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .args(["list-keymaps"])
         .status()
         .expect("Failed to run localectl to see available keymaps");
+    Command::new("locale-gen")
+        .status()
+        .expect("Failed to generate locales");
     println!("What keyboard layout do you want to use for the console? (This won't apply to the installed desktop enviroment)");
     let mut keymap = String::new();
     io::stdin().read_line(&mut keymap).unwrap();
@@ -373,7 +376,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .status()
         .expect("Failed to install the gnome clipboard indicator extension");
     Command::new("arch-chroot")
-        .args(["/mnt", "pacman -S clapper --noconfirm"])
+        .args(["/mnt", "pacman", "-S", "clapper", "--noconfirm"])
         .status()
         .expect("Failed to install clapper for better hanabi performance");
     Command::new("arch-chroot")
