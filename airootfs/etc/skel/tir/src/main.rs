@@ -57,7 +57,7 @@ fn install_graphics(typeofgpu: String) {
                 "pacman",
                 "-S",
                 "vulkan-icd-loader",
-                "lib32-icd-loader",
+                "lib32-vulkan-icd-loader",
                 "mesa",
                 "--noconfirm",
             ])
