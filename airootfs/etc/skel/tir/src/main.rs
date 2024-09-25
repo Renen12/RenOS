@@ -363,7 +363,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     logo=\'/usr/share/pixmaps/RenOS.svg\'",
     )
     .expect("Failed to write to the gdm logo configuration file");
-    Command::new("arch-chroot").args(["/mnt", "-u", "gdm", "dbus-launch gsettings set org.gnome.login-screen logo \'/usr/share/pixmaps/RenOS.svg\'"]).status().expect("Failed to set the gdm logo!");
+    Command::new("arch-chroot").args(["-u", "gdm", "/mnt", "dbus-launch gsettings set org.gnome.login-screen logo \'/usr/share/pixmaps/RenOS.svg\'"]).status().expect("Failed to set the gdm logo!");
     println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
