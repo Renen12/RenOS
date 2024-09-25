@@ -40,7 +40,7 @@ async fn main() {
     } else if args[0] == "-H" {
         help_message(0);
     } else if args[0] == "-R" {
-            if args.len() < 2 {
+        if args.len() < 2 {
             eprintln!("No package was supplied to -R!");
             exit(1);
         }
@@ -48,6 +48,10 @@ async fn main() {
         pkgm::remove(&args[1]);
         exit(0);
     } else if args[0] == "-Ss" {
+        if args.len() < 2 {
+            eprintln!("No package was supplied to -Ss!");
+            exit(1);
+        }
         search(&args[1]).await;
     } else {
         eprintln!("Invalid argument was passed!");

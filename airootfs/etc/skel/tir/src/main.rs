@@ -476,7 +476,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
 
     alias ls=\'ls --color=auto\'
     alias grep=\'grep --color=auto\'
-    PS1=\'\\u@\\H; \\t >>> \'
+    PS1=\'\\u@\\H in \\w; \\t >>> \'
     export LC_CTYPE=\"en_GB.UTF-8\"
     export LC_ALL=\"en_GB.UTF-8\"
     eval \"$(zoxide init bash)\"

@@ -1,4 +1,4 @@
-use reqwest;
+use aur_rs::{self, Request};
 use std::{
     env, fs, io,
     process::{exit, Command},
@@ -13,17 +13,17 @@ pub fn install(pkgname: &String, outdir: String, noconfirm: bool) {
             exit(1);
         }
     }
-    let rmcmd = match Command::new("doas").args(["rm", "-rv", &outdir]).status() {
-        Ok(v) => v,
-        Err(e) => {
-            eprintln!("{e}");
-            exit(1);
-        }
+    match Command::new("doas")
+        .args([
+            "sh",
+            "-c",
+            format!("rm -rv {} &> /dev/null", &outdir).as_str(),
+        ])
+        .status()
+    {
+        Ok(_) => (),
+        Err(_) => (),
     };
-    if rmcmd.code().expect("Failed to retrieve doas status code") == 1 {
-        eprintln!("Failed to authenticate");
-        exit(1);
-    }
     // just move on
     match fs::create_dir(&outdir) {
         Ok(_) => (),
@@ -56,11 +56,17 @@ pub fn remove(package: &String) {
         .expect("Failed to execute the pacman command");
 }
 pub async fn search(packagename: &String) {
-    let packagerequest = reqwest::get(
-        "https://aur.archlinux.org/rpc/v5/search/".to_owned() + &packagename + "?by=name",
-    )
-    .await
-    .expect("Failed to contact the aur api");
-    let _packagerequest = packagerequest.text().await.unwrap();
-    todo!("Search not implemented");
+    let request = Request::default();
+    let response = request
+        .search_package_by_name(packagename)
+        .await
+        .expect("Failed to retrieve package information");
+    if response.results.len() == 0 {
+        eprintln!("No such package was found!");
+        exit(1);
+    }
+    for package in response.results {
+        let package = package.name;
+        println!("{package}");
+    }
 }
