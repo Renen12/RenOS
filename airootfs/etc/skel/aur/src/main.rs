@@ -28,6 +28,10 @@ async fn main() {
         help_message(1);
     }
     if args[0] == "-S" {
+        if args.len() < 2 {
+            eprintln!("No package was supplied to -S!");
+            exit(1);
+        }
         install(
             &args[1],
             "/tmp/aur/".to_string() + &args[1].as_str(),
@@ -36,6 +40,10 @@ async fn main() {
     } else if args[0] == "-H" {
         help_message(0);
     } else if args[0] == "-R" {
+            if args.len() < 2 {
+            eprintln!("No package was supplied to -R!");
+            exit(1);
+        }
         // let pacman remove the package
         pkgm::remove(&args[1]);
         exit(0);

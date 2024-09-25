@@ -8,24 +8,64 @@ use std::{
 fn install_graphics(typeofgpu: String) {
     if typeofgpu == "NVIDIA" {
         Command::new("arch-chroot")
-            .args(["/mnt", "pacman", "-S", "nvidia-open"])
+            .args([
+                "/mnt",
+                "pacman",
+                "-S",
+                "nvidia-open",
+                "nvidia-utils",
+                "vulkan-icd-loader",
+                "lib32-vulkan-icd-loader",
+                "--noconfirm",
+            ])
             .status()
             .expect("Failed to install nvidia graphics drivers");
     } else if typeofgpu == "INTEL" {
         Command::new("arch-chroot")
-            .args(["/mnt", "pacman", "-S", "mesa"])
+            .args([
+                "/mnt",
+                "pacman",
+                "-S",
+                "mesa",
+                "vulkan-intel",
+                "vulkan-icd-loader",
+                "lib32-vulkan-icd-loader",
+                "--noconfirm",
+            ])
             .status()
             .expect("Failed to install intel graphics drivers");
     } else if typeofgpu == "AMD" {
         Command::new("arch-chroot")
-            .args(["/mnt", "pacman", "-S", "mesa"])
+            .args([
+                "/mnt",
+                "pacman",
+                "-S",
+                "mesa",
+                "amdvlk",
+                "vulkan-icd-loader",
+                "lib32-vulkan-icd-loader",
+                "--noconfirm",
+            ])
             .status()
             .expect("Failed to install amd graphics drivers");
     } else if typeofgpu == "NONE" {
         println!("Why do you not have a graphics card?");
+    } else if typeofgpu == "GENERIC" {
+        Command::new("arch-chroot")
+            .args([
+                "/mnt",
+                "pacman",
+                "-S",
+                "vulkan-icd-loader",
+                "lib32-icd-loader",
+                "mesa",
+                "--noconfirm",
+            ])
+            .status()
+            .expect("Failed to install generic graphics drivers");
     } else {
         println!("{} is not a valid option.", typeofgpu);
-        install_graphics(String::from("INTEL"));
+        install_graphics(String::from("GENERIC"));
     }
 }
 fn select_locale(view: bool) -> String {
@@ -144,6 +184,13 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "gnome-backgrounds",
             "github-cli",
             "flatpak",
+            "totem",
+            "gnome-disk-utility",
+            "gnome-text-editor",
+            "wl-clipboard",
+            "dconf-editor",
+            "bash-completion",
+            "loupe",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -262,7 +309,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to copy os release information");
     fs::write(
         "/mnt/etc/lsb-release",
-        "DISTRIB_ID=\"ren__\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
+        "DISTRIB_ID=\"renos\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
     )
     .expect("Failed to write lsb_release information");
     println!("Installing grub and efibootmgr.");
@@ -307,6 +354,16 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable NetworkManager.");
     fs::write("/mnt/etc/doas.conf", "permit persist :wheel \n")
         .expect("Failed to write to doas.conf!");
+    fs::copy("/home/live/RenOS.svg", "/mnt/usr/share/pixmaps/RenOS.svg")
+        .expect("Failed to copy the RenOS logo to the installed system");
+    fs::create_dir("/mnt/etc/dconf/db/gdm.d").expect("Failed to create the gdm config directory");
+    fs::write(
+        "/mnt/etc/dconf/db/gdm.d",
+        "[org/gnome/login-screen]
+    logo=\'/usr/share/pixmaps/RenOS.svg\'",
+    )
+    .expect("Failed to write to the gdm logo configuration file");
+    Command::new("arch-chroot").args(["/mnt", "-u", "gdm", "dbus-launch gsettings set org.gnome.login-screen logo \'/usr/share/pixmaps/RenOS.svg\'"]).status().expect("Failed to set the gdm logo!");
     println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
@@ -370,15 +427,11 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "aur",
             "-S",
-            "gnome-shell-extension-clipboard-indicator-git",
+            "gnome-shell-extension-clipboard-history",
             "--noconfirm",
         ])
         .status()
         .expect("Failed to install the gnome clipboard indicator extension");
-    Command::new("arch-chroot")
-        .args(["/mnt", "pacman", "-S", "clapper", "--noconfirm"])
-        .status()
-        .expect("Failed to install clapper for better hanabi performance");
     Command::new("arch-chroot")
         .args([
             "-u",
@@ -398,18 +451,6 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "aur",
             "-S",
-            "gnome-shell-extension-hanabi-git",
-            "--noconfirm",
-        ])
-        .status()
-        .expect("Failed to install the hanabi(live wallpaper) extension for gnome");
-    Command::new("arch-chroot")
-        .args([
-            "-u",
-            &name,
-            "/mnt",
-            "aur",
-            "-S",
             "zed-preview-bin",
             "--noconfirm",
         ])
@@ -422,10 +463,28 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && gnome-extensions enable appindicatorsupport@rgcjonas@gmail.com && gnome-extensions enable clipboard-indicator@tudmotu.com", &name, &name, &name).as_str(),
+            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && gnome-extensions enable appindicatorsupport@rgcjonas@gmail.com && gnome-extensions enable clipboard-history@alexsaveau.dev", &name, &name, &name).as_str(),
         ])
         .status()
         .expect("Failed to enable gnome goodies!");
+    fs::write(
+        format!("/mnt/home/{}/.bashrc", &name),
+        "#
+    # ~/.bashrc
+    #
+    [[ $- != *i* ]] && return
+
+    alias ls=\'ls --color=auto\'
+    alias grep=\'grep --color=auto\'
+    PS1=\'\\u@\\H; \\t >>> \'
+    export LC_CTYPE=\"en_GB.UTF-8\"
+    export LC_ALL=\"en_GB.UTF-8\"
+    eval \"$(zoxide init bash)\"
+    alias cd=\'z\'
+
+",
+    )
+    .expect("Failed writing the cool bashrc!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
