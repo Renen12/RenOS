@@ -358,7 +358,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to copy the RenOS logo to the installed system");
     fs::create_dir("/mnt/etc/dconf/db/gdm.d").expect("Failed to create the gdm config directory");
     fs::write(
-        "/mnt/etc/dconf/db/gdm.d",
+        "/mnt/etc/dconf/db/gdm.d/02-logo",
         "[org/gnome/login-screen]
     logo=\'/usr/share/pixmaps/RenOS.svg\'",
     )
