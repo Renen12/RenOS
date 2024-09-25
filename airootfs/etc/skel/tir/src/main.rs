@@ -191,6 +191,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "dconf-editor",
             "bash-completion",
             "loupe",
+            "gnome-calculator",
         ])
         .status()
         .expect("Failed to install base system:");
