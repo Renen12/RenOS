@@ -75,13 +75,13 @@ fn select_locale(view: bool) -> String {
         println!("What locale do you want to use?");
         let mut answer = String::new();
         io::stdin().read_line(&mut answer).unwrap();
-        let answer = answer.replace("\n", "") + ".UTF-8" + " UTF-8";
+        let answer = answer.replace("\n", "");
         return answer;
     } else {
         println!("What locale do you want to use?");
         let mut answer = String::new();
         io::stdin().read_line(&mut answer).unwrap();
-        let answer = answer.replace("\n", "") + ".UTF-8" + " UTF-8";
+        let answer = answer.replace("\n", "");
         return answer;
     }
 }
@@ -230,7 +230,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     if answer == "Y" {
         let locale = select_locale(true);
         let locale = locale.as_str();
-        if let Err(e) = writeln!(file, "{}", locale) {
+        if let Err(e) = writeln!(file, "{}", locale.to_owned() + ".UTF-8" + " UTF-8") {
             eprintln!("Couldn't write to locale file: {}", e);
         }
         if let Err(e) = writeln!(file, "en_GB.UTF-8") {
@@ -392,6 +392,11 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to set the gdm logo!");
+    fs::copy(
+        "/home/live/RenOS.svg",
+        "/mnt/usr/share/pixmaps/archlinux-logo-text-dark.svg",
+    )
+    .expect("Failed to copy the RenOS logo!");
     println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
@@ -509,7 +514,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .expect("Failed to enable gnome goodies!");
     fs::write(
         format!("/mnt/home/{}/.bashrc", &name),
-        "#
+        format!(
+            "#
     # ~/.bashrc
     #
     [[ $- != *i* ]] && return
@@ -517,12 +523,14 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     alias ls=\'ls --color=auto\'
     alias grep=\'grep --color=auto\'
     PS1=\'\\u@\\H in \\w; \\t >>> \'
-    export LC_CTYPE=\"en_GB.UTF-8\"
-    export LC_ALL=\"en_GB.UTF-8\"
+    export LC_CTYPE=\"{}\"
+    export LC_ALL=\"{}\"
     eval \"$(zoxide init bash)\"
     alias cd=\'z\'
 
 ",
+            langlocale, langlocale
+        ),
     )
     .expect("Failed writing the cool bashrc!");
     Command::new("ln")
