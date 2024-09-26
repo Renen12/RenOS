@@ -15,7 +15,7 @@
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
      id="namedview1"
-     pagecolor="#ffffff"
+     pagecolor="#000000"
      bordercolor="#000000"
      borderopacity="0.25"
      inkscape:showpageshadow="2"
@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.50709218"
-     inkscape:cx="38.454547"
-     inkscape:cy="371.72729"
+     inkscape:zoom="0.71713664"
+     inkscape:cx="91.335453"
+     inkscape:cy="322.81156"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -51,14 +51,15 @@
          y="55.364235" /></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.2777px;font-family:Cantarell;-inkscape-font-specification:Cantarell;fill:#000000;stroke-width:0.264583"
-       x="37.163578"
-       y="75.040337"
-       id="text2"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.7202px;font-family:Cantarell;-inkscape-font-specification:Cantarell;fill:#000000;stroke-width:0.245402"
+       x="63.127995"
+       y="101.34021"
+       id="text2"
+       transform="matrix(1.0426772,0.25248777,-0.29672982,0.88721545,0,0)"><tspan
          sodipodi:role="line"
          id="tspan2"
-         style="fill:#ffffff;stroke-width:0.264583"
-         x="37.163578"
-         y="75.040337">RenOS</tspan></text>
+         style="fill:#ffffff;stroke-width:0.245402"
+         x="63.127995"
+         y="101.34021">RenOS</tspan></text>
   </g>
 </svg>
