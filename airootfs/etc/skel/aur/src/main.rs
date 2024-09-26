@@ -36,7 +36,8 @@ async fn main() {
             &args[1],
             "/tmp/aur/".to_string() + &args[1].as_str(),
             noconfirm,
-        );
+        )
+        .await;
     } else if args[0] == "-H" {
         help_message(0);
     } else if args[0] == "-R" {

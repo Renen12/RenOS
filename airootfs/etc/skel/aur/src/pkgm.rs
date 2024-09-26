@@ -3,7 +3,7 @@ use std::{
     env, fs, io,
     process::{exit, Command},
 };
-pub fn install(pkgname: &String, outdir: String, noconfirm: bool) {
+pub async fn install(pkgname: &String, outdir: String, noconfirm: bool) {
     if noconfirm == false {
         println!("Installing {}, is this okay? [Y/n]", pkgname);
         let mut answer = String::new();
@@ -12,6 +12,16 @@ pub fn install(pkgname: &String, outdir: String, noconfirm: bool) {
         if answer == "N" {
             exit(1);
         }
+    }
+    println!("Do you want to read the PKGBUILD? [Y/n]");
+    let mut answer: String = String::new();
+    io::stdin().read_line(&mut answer).unwrap();
+    let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
+    if answer != "N" {
+        Command::new("sh")
+            .args(["-c", format!("cat {}/PKGBUILD | less", &outdir).as_str()])
+            .status()
+            .expect("Failed to read the PKGBUILD");
     }
     match Command::new("doas")
         .args([
