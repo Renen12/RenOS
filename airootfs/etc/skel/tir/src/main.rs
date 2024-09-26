@@ -54,7 +54,6 @@ fn install_graphics(typeofgpu: String) {
                 "pacman",
                 "-S",
                 "vulkan-icd-loader",
-                "lib32-vulkan-icd-loader",
                 "mesa",
                 "--noconfirm",
             ])
@@ -383,12 +382,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "-u",
             "gdm",
             "/mnt",
-            "dbus-launch",
-            "gsettings",
-            "set",
-            "org.gnome.login-screen",
-            "logo",
-            "\'/usr/share/pixmaps/RenOS.svg\'",
+            "sh",
+            "-c",
+            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache/ && dbus-launch gsettings set org.gnome.login-screen logo /usr/share/pixmaps/RenOS.svg && doas -u {} dconf update", &name, &name, &name, &name).as_str(),
         ])
         .status()
         .expect("Failed to set the gdm logo!");
