@@ -529,7 +529,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     alias cd=\'z\'
 
 ",
-            langlocale, langlocale
+            langlocale.replace(" ", ""),
+            langlocale.replace(" ", "")
         ),
     )
     .expect("Failed writing the cool bashrc!");
