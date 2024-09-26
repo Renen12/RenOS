@@ -375,7 +375,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     fs::write(
         "/mnt/etc/dconf/db/gdm.d/02-logo",
         "[org/gnome/login-screen]
-    logo=\'/usr/share/pixmaps/RenOS.svg\'",
+    logo=\'/usr/share/pixmaps/RenOS.svg\' \n",
     )
     .expect("Failed to write to the gdm logo configuration file");
     Command::new("arch-chroot")
