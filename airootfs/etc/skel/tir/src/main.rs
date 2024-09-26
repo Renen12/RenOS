@@ -192,6 +192,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "bash-completion",
             "loupe",
             "gnome-calculator",
+            "gnome-terminal",
+            "gnome-software",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -470,6 +472,18 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install the zed code editor");
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "aur",
+            "-S",
+            "gnome-shell-extension-arch-update",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the update indicator extension");
     Command::new("arch-chroot")
         .args([
             "-u",
