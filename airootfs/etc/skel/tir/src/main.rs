@@ -189,9 +189,9 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "bash-completion",
             "loupe",
             "gnome-calculator",
-            "gnome-terminal",
             "gnome-software",
             "lib32-vulkan-icd-loader",
+            "zoxide",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -233,12 +233,26 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         if let Err(e) = writeln!(file, "{}", locale) {
             eprintln!("Couldn't write to locale file: {}", e);
         }
+        if let Err(e) = writeln!(file, "en_GB.UTF-8") {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
+        Command::new("arch-chroot")
+            .args(["/mnt", "locale-gen"])
+            .status()
+            .expect("Failed to generate locales");
     } else if answer != "N" {
         let locale = select_locale(true);
         let locale = locale.as_str();
         if let Err(e) = writeln!(file, "{}", locale) {
             eprintln!("Couldn't write to locale file: {}", e);
         }
+        if let Err(e) = writeln!(file, "en_GB.UTF-8") {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
+        Command::new("arch-chroot")
+            .args(["/mnt", "locale-gen"])
+            .status()
+            .expect("Failed to generate locales");
     } else {
         let locale = select_locale(false);
         let locale = locale.as_str();
