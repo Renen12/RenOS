@@ -513,6 +513,10 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
 ",
     )
     .expect("Failed writing the cool bashrc!");
+    Command::new("ln")
+        .args(["-s", "/mnt/usr/bin/kgx", "/mnt/usr/bin/gnome-terminal"])
+        .status()
+        .expect("Failed to link the gnome console to the gnome terminal binary!");
     println!("System installed. You may now reboot.");
     exit(0);
 }
