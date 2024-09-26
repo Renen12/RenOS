@@ -380,10 +380,15 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     .expect("Failed to write to the gdm logo configuration file");
     Command::new("arch-chroot")
         .args([
+            "-u",
+            "gdm",
             "/mnt",
-            "sh",
-            "-c",
-            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache/ && dbus-launch gsettings set org.gnome.login-screen logo /usr/share/pixmaps/RenOS.svg && dconf update", &name, &name, &name).as_str(),
+            "dbus-launch",
+            "gsettings",
+            "set",
+            "org.gnome.login-screen",
+            "logo",
+            "/usr/share/pixmaps/RenOS.svg",
         ])
         .status()
         .expect("Failed to set the gdm logo!");
