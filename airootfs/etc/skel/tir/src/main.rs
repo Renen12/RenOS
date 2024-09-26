@@ -15,7 +15,6 @@ fn install_graphics(typeofgpu: String) {
                 "nvidia-open",
                 "nvidia-utils",
                 "vulkan-icd-loader",
-                "lib32-vulkan-icd-loader",
                 "--noconfirm",
             ])
             .status()
@@ -29,7 +28,6 @@ fn install_graphics(typeofgpu: String) {
                 "mesa",
                 "vulkan-intel",
                 "vulkan-icd-loader",
-                "lib32-vulkan-icd-loader",
                 "--noconfirm",
             ])
             .status()
@@ -43,7 +41,6 @@ fn install_graphics(typeofgpu: String) {
                 "mesa",
                 "amdvlk",
                 "vulkan-icd-loader",
-                "lib32-vulkan-icd-loader",
                 "--noconfirm",
             ])
             .status()
@@ -194,6 +191,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "gnome-calculator",
             "gnome-terminal",
             "gnome-software",
+            "lib32-vulkan-icd-loader",
         ])
         .status()
         .expect("Failed to install base system:");
