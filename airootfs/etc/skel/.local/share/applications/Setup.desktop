@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Setup_System
+Exec=kgx -e "bash -c ~/.local/bin/rensetup"
+Type=Application
+NoDisplay=true

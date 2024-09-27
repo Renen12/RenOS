@@ -223,6 +223,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .append(true)
         .open("/mnt/etc/locale.gen")
         .expect("Failed to open locale.gen file:");
+    #[allow(unused_assignments)]
     let mut glocale: String = String::new();
     println!("Do you want to view the available locales? [y/N]");
     let mut answer = String::new();
@@ -395,6 +396,19 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         "/mnt/usr/share/pixmaps/archlinux-logo-text-dark.svg",
     )
     .expect("Failed to copy the RenOS logo!");
+    println!("Installing the first-time setup program!");
+    fs::copy(
+        "/home/live/.local/bin/rensetup",
+        format!("/mnt/home/{}/.local/bin", &name),
+    )
+    .expect("Failed to copy the rensetup binary");
+    fs::create_dir(format!("/mnt/home/{}/.config/autostart", &name))
+        .expect("Failed to create the autostart directory");
+    fs::copy(
+        "/home/live/.local/share/applications/Setup.desktop",
+        format!("/mnt/home/{}/.config/autostart/setup-renos.desktop", &name),
+    )
+    .expect("Failed to copy the rensetup desktop file");
     println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
