@@ -223,7 +223,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         .append(true)
         .open("/mnt/etc/locale.gen")
         .expect("Failed to open locale.gen file:");
-    println!("Do you want to view the available locales? [Y/n]");
+    let mut glocale: String = String::new();
+    println!("Do you want to view the available locales? [y/N]");
     let mut answer = String::new();
     std::io::stdin().read_line(&mut answer).unwrap();
     let answer = answer.replace("\n", "").replace(" ", "").to_uppercase();
@@ -233,38 +234,35 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         if let Err(e) = writeln!(file, "{}", locale.to_owned() + ".UTF-8" + " UTF-8") {
             eprintln!("Couldn't write to locale file: {}", e);
         }
-        if let Err(e) = writeln!(file, "en_GB.UTF-8") {
-            eprintln!("Couldn't write to locale file: {}", e);
-        }
+        fs::write("/mnt/etc/locale.conf", format!("LANG={}", locale))
+            .expect("Failed to write to locale language configuration file:");
         Command::new("arch-chroot")
             .args(["/mnt", "locale-gen"])
             .status()
             .expect("Failed to generate locales");
-    } else if answer != "N" {
-        let locale = select_locale(true);
-        let locale = locale.as_str();
-        if let Err(e) = writeln!(file, "{}", locale) {
-            eprintln!("Couldn't write to locale file: {}", e);
-        }
-        if let Err(e) = writeln!(file, "en_GB.UTF-8") {
-            eprintln!("Couldn't write to locale file: {}", e);
-        }
-        Command::new("arch-chroot")
-            .args(["/mnt", "locale-gen"])
-            .status()
-            .expect("Failed to generate locales");
-    } else {
+        glocale = locale.to_owned();
+    } else if answer != "Y" {
         let locale = select_locale(false);
         let locale = locale.as_str();
+        if let Err(e) = writeln!(file, "{}", locale.to_owned() + ".UTF-8" + " UTF-8") {
+            eprintln!("Couldn't write to locale file: {}", e);
+        }
+        fs::write("/mnt/etc/locale.conf", format!("LANG={}", locale))
+            .expect("Failed to write to locale language configuration file:");
+        Command::new("arch-chroot")
+            .args(["/mnt", "locale-gen"])
+            .status()
+            .expect("Failed to generate locales");
+        glocale = locale.to_owned();
+    } else {
+        let locale = select_locale(false);
+        let locale = locale.clone();
         if let Err(e) = writeln!(file, "{}", locale) {
             eprintln!("Couldn't write to locale file: {}", e);
         }
+        glocale = locale;
     }
-    println!("What language locale do you want to use?");
-    let mut langlocale = String::new();
-    io::stdin().read_line(&mut langlocale).unwrap();
-    let langlocale = langlocale.replace("\n", "") + ".UTF-8";
-    fs::write("/mnt/etc/locale.conf", format!("LANG={}", langlocale))
+    fs::write("/mnt/etc/locale.conf", format!("LANG={}", &glocale))
         .expect("Failed to write to locale language configuration file:");
     println!("Press enter to view the available keymaps...");
     io::stdin().read_line(&mut String::new()).unwrap();
@@ -529,8 +527,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     alias cd=\'z\'
 
 ",
-            langlocale.replace(" ", ""),
-            langlocale.replace(" ", "")
+            glocale.replace(" ", ""),
+            glocale.replace(" ", "")
         ),
     )
     .expect("Failed writing the cool bashrc!");
