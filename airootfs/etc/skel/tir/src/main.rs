@@ -397,6 +397,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     )
     .expect("Failed to copy the RenOS logo!");
     println!("Installing the first-time setup program!");
+    fs::create_dir_all(format!("/mnt/home/{}/.local/bin", &name))
+        .expect("Failed to create .local directory");
     fs::copy(
         "/home/live/.local/bin/rensetup",
         format!("/mnt/home/{}/.local/bin", &name),
