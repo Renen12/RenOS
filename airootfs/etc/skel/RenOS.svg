@@ -51,15 +51,14 @@
          y="55.364235" /></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.7202px;font-family:Cantarell;-inkscape-font-specification:Cantarell;fill:#000000;stroke-width:0.245402"
-       x="63.127995"
-       y="101.34021"
-       id="text2"
-       transform="matrix(1.0426772,0.25248777,-0.29672982,0.88721545,0,0)"><tspan
+       style="font-size:14.1111px;font-family:Cantarell;-inkscape-font-specification:Cantarell;fill:#ffffff;stroke-width:0.264583"
+       x="65.729691"
+       y="127.74689"
+       id="text2"><tspan
          sodipodi:role="line"
          id="tspan2"
-         style="fill:#ffffff;stroke-width:0.245402"
-         x="63.127995"
-         y="101.34021">RenOS</tspan></text>
+         style="font-size:14.1111px;stroke-width:0.264583"
+         x="65.729691"
+         y="127.74689">RenOS</tspan></text>
   </g>
 </svg>
