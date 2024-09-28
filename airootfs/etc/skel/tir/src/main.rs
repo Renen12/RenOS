@@ -411,6 +411,13 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         format!("/mnt/home/{}/.config/autostart/setup-renos.desktop", &name),
     )
     .expect("Failed to copy the rensetup desktop file");
+    Command::new("chmod")
+        .args([
+            "777",
+            format!("/mnt/home/{}/.local/bin/rensetup", &name).as_str(),
+        ])
+        .status()
+        .expect("Failed to set rensetup permissions");
     println!("Installing the aur helper!");
     Command::new("arch-chroot")
         .args([
@@ -543,8 +550,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     alias cd=\'z\'
 
 ",
-            glocale.replace(" ", ""),
-            glocale.replace(" ", "")
+            glocale.replace(" ", "") + ".UTF-8",
+            glocale.replace(" ", "") + "UTF-8"
         ),
     )
     .expect("Failed writing the cool bashrc!");
