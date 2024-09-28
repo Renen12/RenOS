@@ -16,6 +16,15 @@ fn main() -> glib::ExitCode {
         .status()
         .unwrap();
     // Run the application
+    Command::new("flatpak")
+        .args([
+            "remote-add",
+            "--if-not-exists",
+            "flathub",
+            "https://dl.flathub.org/repo/flathub.flatpakrepo",
+        ])
+        .status()
+        .expect("Failed to enable the flathub repository!");
     app.run()
 }
 
