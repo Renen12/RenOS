@@ -1,5 +1,4 @@
 use std::process::Command;
-use std::{env, fs};
 
 use gtk::{glib, Application, ApplicationWindow};
 use gtk::{prelude::*, Label};
@@ -12,8 +11,10 @@ fn main() -> glib::ExitCode {
 
     // Connect to "activate" signal of `app`
     app.connect_activate(build_ui);
-    fs::remove_file(env::var("HOME").unwrap() + "/.config/autostart/setup-renos.desktop")
-        .expect("Can't remove the renos setup desktop file");
+    Command::new("pkexec")
+        .args(["sh", "-c", "rm $HOME/.config/autostart/setup-renos.desktop"])
+        .status()
+        .unwrap();
     // Run the application
     app.run()
 }

@@ -550,8 +550,8 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
     alias cd=\'z\'
 
 ",
-            glocale.replace(" ", "") + ".UTF-8",
-            glocale.replace(" ", "") + "UTF-8"
+            glocale.clone() + ".UTF-8",
+            glocale.clone() + ".UTF-8"
         ),
     )
     .expect("Failed writing the cool bashrc!");
