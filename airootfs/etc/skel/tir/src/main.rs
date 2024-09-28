@@ -404,7 +404,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         format!("/mnt/home/{}/.local/bin/rensetup", &name),
     )
     .expect("Failed to copy the rensetup binary");
-    fs::create_dir(format!("/mnt/home/{}/.config/autostart", &name))
+    fs::create_dir_all(format!("/mnt/home/{}/.config/autostart", &name))
         .expect("Failed to create the autostart directory");
     fs::copy(
         "/home/live/.local/share/applications/Setup.desktop",
