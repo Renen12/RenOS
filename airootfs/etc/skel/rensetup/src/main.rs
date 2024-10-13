@@ -90,12 +90,8 @@ fn build_ui(app: &Application) {
                         .spawn()
                         .unwrap();
                 } else if program.typeofsoftware == SoftwareType::Flatpak {
-                    Command::new("sh")
-                        .args([
-                            "-c",
-                            format!("flatpak install -y --user {}", program.id.as_ref().unwrap())
-                                .as_str(),
-                        ])
+                    Command::new("flatpak")
+                        .args(["install", "-y", "--user", program.id.as_ref().unwrap()])
                         .spawn()
                         .unwrap();
                 }
