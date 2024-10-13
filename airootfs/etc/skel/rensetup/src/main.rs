@@ -40,36 +40,37 @@ fn build_ui(app: &Application) {
         name: String,
         typeofsoftware: SoftwareType,
         id: Option<String>,
+        display: String,
     }
     let software: Vec<Program> = vec![
         Program {
             name: String::from("discord"),
             typeofsoftware: SoftwareType::Flatpak,
             id: Some(String::from("com.discordapp.Discord")),
+            display: String::from("Discord"),
         },
         Program {
             name: String::from("code"),
             typeofsoftware: SoftwareType::Native,
             id: None,
+            display: String::from("Visual Studio Code"),
         },
         Program {
             name: String::from("spotify"),
             typeofsoftware: SoftwareType::Flatpak,
             id: Some(String::from("com.spotify.Client")),
+            display: String::from("Spotify"),
         },
         Program {
             name: String::from("supertuxkart"),
             typeofsoftware: SoftwareType::Native,
             id: None,
+            display: String::from("Super Tux Kart"),
         },
     ];
     for program in software {
         let check = gtk::CheckButton::builder().build();
-        if &program.name == "code" {
-            check.set_label(Some("vscode"));
-        } else {
-            check.set_label(Some(&program.name));
-        }
+        check.set_label(Some(&program.display));
         check.connect_toggled(move |btn| {
             if btn.is_active() {
                 println!("installing {}", &program.name);
