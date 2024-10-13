@@ -1,4 +1,5 @@
 use std::process::Command;
+use std::{env, fs};
 
 use gtk::{glib, Application, ApplicationWindow};
 use gtk::{prelude::*, Label};
@@ -11,8 +12,17 @@ fn main() -> glib::ExitCode {
 
     // Connect to "activate" signal of `app`
     app.connect_activate(build_ui);
+    fs::write(
+        "/tmp/userhomepath",
+        env::var("HOME").expect("Failed getting the user's home directory"),
+    )
+    .expect("Failed to write the user's home directory to a temporary file");
     Command::new("pkexec")
-        .args(["sh", "-c", "rm $HOME/.config/autostart/setup-renos.desktop"])
+        .args([
+            "sh",
+            "-c",
+            "rm $(cat /tmp/userhomepath)/.config/autostart/setup-renos.desktop",
+        ])
         .status()
         .unwrap();
     // Run the application
