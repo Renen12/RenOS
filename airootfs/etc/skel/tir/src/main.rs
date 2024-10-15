@@ -192,6 +192,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "lib32-vulkan-icd-loader",
             "zoxide",
             "less",
+            "gnome-packagekit",
         ])
         .status()
         .expect("Failed to install base system:");
@@ -510,6 +511,23 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
         ])
         .status()
         .expect("Failed to install the zed code editor");
+    Command::new("arch-chroot")
+        .args(["-u", &name, "/mnt", "aur", "-S", "paru", "--noconfirm"])
+        .status()
+        .unwrap();
+    Command::new("arch-chroot")
+        .args([
+            "-u",
+            &name,
+            "/mnt",
+            "paru",
+            "-S",
+            "gnome-shell-extension-pop-shell-git",
+            "--noconfirm",
+        ])
+        .status()
+        .expect("Failed to install the pop shell gnome extension");
+
     Command::new("arch-chroot")
         .args([
             "-u",
