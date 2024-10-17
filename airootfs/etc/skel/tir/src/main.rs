@@ -518,7 +518,7 @@ fn install_system(rootpart: &String, efipart: &String, swappart: &String) -> io:
             "/mnt",
             "sh",
             "-c",
-            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && aur -S paru --noconfirm", &name, &name, &name).as_str(),
+            format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable && aur -S paru --noconfirm", &name, &name, &name).as_str(),
         ])
         .status()
         .unwrap();
