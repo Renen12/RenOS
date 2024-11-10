@@ -1,7 +1,7 @@
 use std::process::Command;
 use std::{env, fs};
 
-use gtk::{glib, Application, ApplicationWindow};
+use gtk::{glib, Application, ApplicationWindow, DialogFlags, MessageDialog, Window};
 use gtk::{prelude::*, Label};
 
 const APP_ID: &str = "net.ren-net.welcome";
@@ -85,15 +85,46 @@ fn build_ui(app: &Application) {
             if btn.is_active() {
                 println!("installing {}", &program.name);
                 if program.typeofsoftware == SoftwareType::Native {
-                    Command::new("pkexec")
-                        .args(["pacman", "-S", &program.name, "--noconfirm"])
-                        .spawn()
-                        .unwrap();
+                    let code = Command::new("ping")
+                        .args(["8.8.8.8", "-c", "3"])
+                        .status()
+                        .expect("Failed to verify network connection");
+                    println!("{}", code.code().unwrap());
+                    if code.code().unwrap() != 0 {
+                        MessageDialog::new(
+                            None::<&Window>,
+                            DialogFlags::empty(),
+                            gtk::MessageType::Error,
+                            gtk::ButtonsType::Ok,
+                            "An internet connection is required to install additional software",
+                        );
+                    } else {
+                        Command::new("pkexec")
+                            .args(["pacman", "-S", &program.name, "--noconfirm"])
+                            .spawn()
+                            .unwrap();
+                    }
                 } else if program.typeofsoftware == SoftwareType::Flatpak {
-                    Command::new("flatpak")
-                        .args(["install", "-y", "--user", program.id.as_ref().unwrap()])
-                        .spawn()
-                        .unwrap();
+                    let code = Command::new("ping")
+                        .args(["8.8.8.8", "-c", "3"])
+                        .status()
+                        .expect("Failed to verify network connection");
+                    println!("{}", code.code().unwrap());
+                    if code.code().unwrap() != 0 {
+                        MessageDialog::new(
+                            Some(&ApplicationWindow::builder().build()),
+                            DialogFlags::empty(),
+                            gtk::MessageType::Error,
+                            gtk::ButtonsType::Ok,
+                            "An internet connection is required to install additional software",
+                        );
+                    } else {
+                        println!("{}", program.id.as_ref().unwrap());
+                        Command::new("flatpak")
+                            .args(["install", "-y", program.id.as_ref().unwrap()])
+                            .spawn()
+                            .unwrap();
+                    }
                 }
             } else {
                 println!("uninstalling {}", &program.name);

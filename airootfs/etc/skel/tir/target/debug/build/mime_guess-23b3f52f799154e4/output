@@ -1,1 +1,0 @@
-cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/home/olle/Documents/RenOS/airootfs/etc/skel/tir/target/debug/build/mime_guess-23b3f52f799154e4/out/mime_types_generated.rs
