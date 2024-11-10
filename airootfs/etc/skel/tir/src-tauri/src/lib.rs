@@ -26,6 +26,73 @@ fn write_to_log(status: usize) {
         .unwrap();
 }
 #[tauri::command]
+fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
+    let cmd = match Command::new("mount")
+        .args([syspart, String::from("/mnt")])
+        .status()
+    {
+        Ok(v) => v,
+        Err(_) => {
+            emit_err(&app);
+            return;
+        }
+    };
+    probe_cmd_err(cmd, &app);
+    let cmd = match Command::new("mount")
+        .args(["--mkdir", efipart.as_str(), "/mnt/boot"])
+        .status()
+    {
+        Ok(v) => v,
+        Err(_) => {
+            emit_err(&app);
+            return;
+        }
+    };
+    probe_cmd_err(cmd, &app);
+    let app_mutex = Mutex::new(app.clone());
+    let thread = thread::spawn(move || {
+        let cmd = match Command::new("arch-chroot")
+            .args(["/mnt", "sh", "-c", "pacman -Qqn | pacman -S -"])
+            .status()
+        {
+            Ok(v) => v,
+            Err(_) => {
+                emit_err(&app_mutex.lock().unwrap());
+                return;
+            }
+        };
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        let cmd = match Command::new("arch-chroot")
+            .args(["/mnt", "sh", "-c", "pacman -Qqn | pacman -S - --noconfirm"])
+            .status()
+        {
+            Ok(v) => v,
+            Err(_) => {
+                emit_err(&app_mutex.lock().unwrap());
+                return;
+            }
+        };
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        let cmd = match Command::new("arch-chroot")
+            .args([
+                "/mnt",
+                "sh",
+                "-c",
+                "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=RenOS",
+            ])
+            .status()
+        {
+            Ok(v) => v,
+            Err(_) => {
+                emit_err(&app_mutex.lock().unwrap());
+                return;
+            }
+        };
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+    });
+    thread.join().unwrap();
+}
+#[tauri::command]
 fn exit(app: AppHandle) {
     app.exit(0);
 }
@@ -724,7 +791,8 @@ pub fn run() {
             exit,
             set_config_perms,
             nvidia_old,
-            return_partitions
+            return_partitions,
+            restore_renos
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

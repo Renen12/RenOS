@@ -1,6 +1,54 @@
 <script setup>
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
+document.getElementById("restore").onclick = async () => {
+    document.getElementById("yes").remove();
+    document.getElementById("no").remove();
+    document.getElementById("action").innerHTML =
+        "Please select the SYSTEM partition you want to restore:";
+    await reset_renos();
+};
+async function reset_renos() {
+    let restorepartitions = {
+        syspart: "debugerror",
+        efipart: "debugerror",
+    };
+    document.body.innerHTML =
+        document.body.innerHTML +
+        `<select name="partitions" id="partitions"> </select> <br> <input type="submit" value="Confirm" id="confirm">`;
+    invoke("return_partitions").then((listofpartitions) => {
+        listofpartitions.forEach((v) => {
+            if (v.replace(" ", "") != "") {
+                let e = document.createElement("option");
+                e.value = "0";
+                e.innerHTML = v;
+                document.getElementById("partitions").appendChild(e);
+            }
+        });
+    });
+    document.getElementById("confirm").onclick = async () => {
+        document.getElementById("action").innerHTML =
+            "Please select the BOOT(EFI) partition you want to restore:";
+        let partitions = document.getElementById("partitions");
+        let selected = partitions.options[partitions.selectedIndex].text;
+        console.log(selected);
+        restorepartitions["syspart"] = selected;
+        document.getElementById("confirm").onclick = async () => {
+            let partitions = document.getElementById("partitions");
+            let selected = partitions.options[partitions.selectedIndex].text;
+            console.log(selected);
+            restorepartitions["efipart"] = selected;
+            document.getElementById("action").innerHTML =
+                "Please wait while RenOS is being reset...";
+            await invoke("restore_renos", {
+                syspart: restorepartitions["syspart"],
+                efipart: restorepartitions["efipart"],
+            }).then(async (_) => {
+                await invoke("reboot");
+            });
+        };
+    };
+}
 let partitions_obj = {
     efipart: "",
     syspart: "",
@@ -114,9 +162,11 @@ function confirmpartitioningmethod() {
         "Do you want to partition your disks?";
     document.getElementById("yes").onclick = () => {
         invoke("run_gparted");
+        document.getElementById("restore").remove();
         pick_sys_partition();
     };
     document.getElementById("no").onclick = () => {
+        document.getElementById("restore").remove();
         pick_sys_partition();
     };
 }
