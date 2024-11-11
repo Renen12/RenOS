@@ -723,7 +723,19 @@ fn write_to_localegen(app: AppHandle, lang: String) {
             return;
         }
     };
-    match fs::write("/mnt/etc/locale.conf", format!("LANG={}", lang)) {
+    match fs::write(
+        "/mnt/etc/locale.conf",
+        format!(
+            "LANG={}",
+            match lang.split(" ").collect::<Vec<&str>>().get(0) {
+                Some(v) => v,
+                None => {
+                    emit_err(&app);
+                    return;
+                }
+            }
+        ),
+    ) {
         Ok(_) => (),
         Err(_) => {
             app.get_webview_window("main")
