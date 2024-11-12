@@ -27,6 +27,7 @@ fn write_to_log(status: usize) {
 }
 #[tauri::command]
 async fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
+    println!("Restoring RenOS");
     let cmd = match Command::new("mount")
         .args([syspart, String::from("/mnt")])
         .status()
