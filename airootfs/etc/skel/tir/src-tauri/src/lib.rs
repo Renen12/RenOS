@@ -26,7 +26,7 @@ fn write_to_log(status: usize) {
         .unwrap();
 }
 #[tauri::command]
-fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
+async fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
     let cmd = match Command::new("mount")
         .args([syspart, String::from("/mnt")])
         .status()
@@ -50,7 +50,7 @@ fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
     };
     probe_cmd_err(cmd, &app);
     let app_mutex = Mutex::new(app.clone());
-    let thread = thread::spawn(move || {
+    thread::spawn(move || {
         let cmd = match Command::new("arch-chroot")
             .args(["/mnt", "sh", "-c", "pacman -Qqn | pacman -S - --noconfirm"])
             .status()
@@ -79,7 +79,6 @@ fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
         };
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
-    thread.join().unwrap();
 }
 #[tauri::command]
 fn exit(app: AppHandle) {
