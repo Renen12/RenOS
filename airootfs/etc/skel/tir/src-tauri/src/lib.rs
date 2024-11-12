@@ -378,7 +378,7 @@ fn monolithic_the_rest(user: String, app: AppHandle) {
     // Install rust
     let app_mutex = Mutex::new(app.clone());
     let user_mutex = Mutex::new(user.clone());
-    let misc_thread = thread::spawn(move || {
+    thread::spawn(move || {
         println!("Misc thread debug before rustup");
         let cmd = Command::new("arch-chroot").args(["/mnt", "sh", "-c",  format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install rust");
         println!("Misc thread debug after rustup");
@@ -403,7 +403,6 @@ fn monolithic_the_rest(user: String, app: AppHandle) {
         let cmd = Command::new("arch-chroot").args(["/mnt", "-u", &user_mutex.lock().unwrap(), "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && paru -S zed-preview-bin gnome-shell-extension-clipboard-indicator gnome-shell-extension-blur-my-shell --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install additional software");
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
-    misc_thread.join().unwrap();
     unsafe {
         println!("{GLOBAL_LOCALE}");
         match fs::write(
