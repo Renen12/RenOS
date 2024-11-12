@@ -9,6 +9,7 @@ document.getElementById("restore").onclick = async () => {
     await reset_renos();
 };
 async function reset_renos() {
+    document.getElementById("restore").remove();
     let restorepartitions = {
         syspart: "debugerror",
         efipart: "debugerror",

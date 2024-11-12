@@ -2,6 +2,10 @@
 import { invoke } from "@tauri-apps/api/core";
 </script>
 <script>
+async function remove_startup_desktopentry() {
+    await invoke("remove_startup_desktopentry");
+}
+remove_startup_desktopentry();
 // Application data
 let spotify = {
     name: "Spotify",
@@ -23,6 +27,14 @@ let stk = {
     name: "Super Tux Kart",
     type: "native",
 };
+async function check_internet() {
+    while ((await invoke("has_internet")) != true) {
+        alert(
+            "An internet connection is required to install additional software. Please connect to the internet and try again!",
+        );
+    }
+}
+check_internet();
 let software = [stk, vscode, steam, spotify];
 software.forEach((program) => {
     document.body.innerHTML =
