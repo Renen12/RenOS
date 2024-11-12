@@ -626,6 +626,8 @@ async fn install_system(rootpart: String, efipart: String, swappart: String, app
                 "sushi",
                 "realtime-privileges",
                 "icu",
+                "webkit2gtk-4.1",
+                "webkit2gtk",
             ])
             .spawn()
         {
