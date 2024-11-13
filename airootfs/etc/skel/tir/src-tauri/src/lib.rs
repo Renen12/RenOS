@@ -182,36 +182,7 @@ fn probe_cmd_err(cmd: ExitStatus, app: &AppHandle) {
         write_to_log(cmd.code().unwrap() as usize);
     }
 }
-#[tauri::command]
-fn monolithic_the_rest(user: String, app: AppHandle) {
-    match fs::copy("/etc/os-release", "/mnt/etc/os-release") {
-        Ok(_) => (),
-        Err(_) => {
-            app.get_webview_window("main")
-                .unwrap()
-                .emit("failed", ())
-                .unwrap();
-        }
-    };
-    match fs::create_dir_all(format!("/home/{}/Templates", &user)) {
-        Ok(_) => (),
-        Err(_) => emit_err(&app),
-    }
-    match fs::write(format!("/home/{}/Templates/Text File.txt", &user), "") {
-        Ok(_) => (),
-        Err(_) => emit_err(&app),
-    }
-    match fs::write(
-        "/mnt/etc/lsb-release",
-        "DISTRIB_ID=\"renos\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
-    ) {
-        Ok(_) => (),
-        Err(_) => app
-            .get_webview_window("main")
-            .unwrap()
-            .emit("failed", ())
-            .unwrap(),
-    }
+async fn install_grub(app: AppHandle) {
     // Install the bootloader
     let app_mutex = Mutex::new(app.clone());
     let thread = thread::spawn(move || {
@@ -256,6 +227,38 @@ fn monolithic_the_rest(user: String, app: AppHandle) {
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
     thread.join().unwrap();
+}
+#[tauri::command]
+async fn monolithic_the_rest(user: String, app: AppHandle) {
+    install_grub(app.clone()).await;
+    match fs::copy("/etc/os-release", "/mnt/etc/os-release") {
+        Ok(_) => (),
+        Err(_) => {
+            app.get_webview_window("main")
+                .unwrap()
+                .emit("failed", ())
+                .unwrap();
+        }
+    };
+    match fs::create_dir_all(format!("/home/{}/Templates", &user)) {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
+    match fs::write(format!("/home/{}/Templates/Text File.txt", &user), "") {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
+    match fs::write(
+        "/mnt/etc/lsb-release",
+        "DISTRIB_ID=\"renos\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
+    ) {
+        Ok(_) => (),
+        Err(_) => app
+            .get_webview_window("main")
+            .unwrap()
+            .emit("failed", ())
+            .unwrap(),
+    }
     let cmd = Command::new("arch-chroot")
         .args(["/mnt", "systemctl", "enable", "gdm"])
         .status()
@@ -378,46 +381,51 @@ fn monolithic_the_rest(user: String, app: AppHandle) {
     // Install rust
     let app_mutex = Mutex::new(app.clone());
     let user_mutex = Mutex::new(user.clone());
-    let cmd = Command::new("arch-chroot").args(["/mnt", "sh", "-c",  format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install rust");
-    probe_cmd_err(cmd, &app_mutex.lock().unwrap());
-    let cmd = Command::new("arch-chroot").args(["-u", &user_mutex.lock().unwrap(), "/mnt", "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install the arch linux user repository helper");
-    probe_cmd_err(cmd, &app_mutex.lock().unwrap());
-    let cmd = Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "sh",
-            "-c",
-            format!(
-                "cd /home/{}/.local/renos/paru && pacman -U *.pkg.tar.zst --noconfirm",
-                &user_mutex.lock().unwrap()
-            )
-            .as_str(),
-        ])
-        .status()
-        .expect("Failed to install the aur helper");
-    probe_cmd_err(cmd, &app_mutex.lock().unwrap());
-    // Install additional AUR packages
-    let cmd = Command::new("arch-chroot").args(["/mnt", "-u", &user_mutex.lock().unwrap(), "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && paru -S zed-preview-bin gnome-shell-extension-clipboard-indicator gnome-shell-extension-blur-my-shell --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install additional software");
-    probe_cmd_err(cmd, &app_mutex.lock().unwrap());
-    unsafe {
-        println!("{GLOBAL_LOCALE}");
-        match fs::write(
-            "/mnt/home/".to_owned() + &user + "/.bashrc",
-            format!(
-                "
-         [[ $- != *i* ]] && return
-         alias ls=\'ls --color=auto\'
-         alias grep=\'grep --color=auto\'
-         PS1=\'\\u@\\H in \\w; \\t >>> \'
-         eval \"$(zoxide init bash)\"
-         alias cd=\'z\'",
-            ),
-        ) {
-            Ok(_) => (),
-            Err(_) => emit_err(&app),
+    println!("before threading");
+    let thread = thread::spawn(move || {
+        let cmd = Command::new("arch-chroot").args(["/mnt", "sh", "-c",  format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install rust");
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        let cmd = Command::new("arch-chroot").args(["-u", &user_mutex.lock().unwrap(), "/mnt", "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install the arch linux user repository helper");
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        let cmd = Command::new("arch-chroot")
+            .args([
+                "/mnt",
+                "sh",
+                "-c",
+                format!(
+                    "cd /home/{}/.local/renos/paru && pacman -U *.pkg.tar.zst --noconfirm",
+                    &user_mutex.lock().unwrap()
+                )
+                .as_str(),
+            ])
+            .status()
+            .expect("Failed to install the aur helper");
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        // Install additional AUR packages
+        let cmd = Command::new("arch-chroot").args(["/mnt", "-u", &user_mutex.lock().unwrap(), "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && paru -S zed-preview-bin gnome-shell-extension-clipboard-indicator gnome-shell-extension-blur-my-shell --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install additional software");
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        unsafe {
+            println!("{GLOBAL_LOCALE}");
+            match fs::write(
+                "/mnt/home/".to_owned() + &user + "/.bashrc",
+                format!(
+                    "
+             [[ $- != *i* ]] && return
+             alias ls=\'ls --color=auto\'
+             alias grep=\'grep --color=auto\'
+             PS1=\'\\u@\\H in \\w; \\t >>> \'
+             eval \"$(zoxide init bash)\"
+             alias cd=\'z\'",
+                ),
+            ) {
+                Ok(_) => (),
+                Err(_) => emit_err(&app_mutex.lock().unwrap()),
+            }
         }
-    }
-    probe_cmd_err(cmd, &app);
+        probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+    });
+    thread.join().unwrap();
+    println!("after threading");
     app.get_webview_window("main")
         .unwrap()
         .emit("gputrigger", ())
