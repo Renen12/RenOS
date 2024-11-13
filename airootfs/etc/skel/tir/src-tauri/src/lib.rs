@@ -382,7 +382,7 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
     let app_mutex = Mutex::new(app.clone());
     let user_mutex = Mutex::new(user.clone());
     println!("before threading");
-    let thread = thread::spawn(move || {
+    thread::spawn(move || {
         let cmd = Command::new("arch-chroot").args(["/mnt", "sh", "-c",  format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install rust");
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
         let cmd = Command::new("arch-chroot").args(["-u", &user_mutex.lock().unwrap(), "/mnt", "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap(), &user_mutex.lock().unwrap()).as_str()]).status().expect("Failed to install the arch linux user repository helper");
@@ -424,7 +424,6 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
         }
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
-    thread.join().unwrap();
     println!("after threading");
     app.get_webview_window("main")
         .unwrap()
