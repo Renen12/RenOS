@@ -35,6 +35,16 @@ async function check_internet() {
     }
 }
 check_internet();
+// Install additional software
+document.getElementById("additional").innerHTML =
+    "Please wait while non-essential improvements are being applied to RenOS...";
+async function install_other() {
+    await invoke("install_other").then(async () => {
+        document.getElementById("additional").innerHTML =
+            "Select the additional software you want below:";
+    });
+}
+install_other();
 let software = [stk, vscode, steam, spotify];
 software.forEach((program) => {
     document.body.innerHTML =
