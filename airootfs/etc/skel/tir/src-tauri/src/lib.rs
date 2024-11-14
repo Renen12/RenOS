@@ -378,7 +378,6 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
         }
     };
     probe_cmd_err(cmd, &app);
-    // Install rust
     let app_mutex = Mutex::new(app.clone());
     thread::spawn(move || {
         unsafe {
@@ -401,7 +400,6 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
         }
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
-    println!("after threading");
     app.get_webview_window("main")
         .unwrap()
         .emit("gputrigger", ())

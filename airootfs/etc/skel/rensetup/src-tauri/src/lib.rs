@@ -53,24 +53,35 @@ async fn exit(app: AppHandle) {
 }
 #[tauri::command]
 async fn install_other() {
-    let user = env::var("USER").unwrap();
-    Command::new("arch-chroot").args(["/mnt", "sh", "-c",  format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && rustup default stable", &user, &user, &user).as_str()]).status().expect("Failed to install rust");
-    Command::new("arch-chroot").args(["-u", &user, "/mnt", "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user, &user, &user, &user).as_str()]).status().expect("Failed to install the arch linux user repository helper");
-    Command::new("arch-chroot")
-        .args([
-            "/mnt",
-            "sh",
-            "-c",
-            format!(
-                "cd /home/{}/.local/renos/paru && pacman -U *.pkg.tar.zst --noconfirm",
-                &user
-            )
-            .as_str(),
-        ])
-        .status()
-        .expect("Failed to install the aur helper");
-    // Install additional AUR packages
-    Command::new("arch-chroot").args(["/mnt", "-u", &user, "sh", "-c", format!("export HOME=/home/{} && export XDG_CONFIG_HOME=/home/{}/.config && export XDG_CACHE_HOME=/home/{}/.cache && paru -S zed-preview-bin gnome-shell-extension-clipboard-indicator gnome-shell-extension-blur-my-shell --noconfirm", &user, &user, &user).as_str()]).status().expect("Failed to install additional software");
+    let thread = thread::spawn(|| {
+        let user = env::var("USER").unwrap();
+        Command::new("sh")
+            .args(["-c", "rustup default stable"])
+            .status()
+            .expect("Failed to install rust");
+        Command::new("sh").args([ "-c", format!("cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user).as_str()]).status().expect("Failed to install the arch linux user repository helper");
+        Command::new("sh")
+            .args([
+                "-c",
+                format!(
+                    "cd /home/{}/.local/renos/paru && pkexec pacman -U *.pkg.tar.zst --noconfirm",
+                    &user
+                )
+                .as_str(),
+            ])
+            .status()
+            .expect("Failed to install the aur helper");
+        Command::new("paru")
+            .args([
+                "-S",
+                "zed-preview-bin",
+                "gnome-shell-extension-clipboard-indicator",
+                "gnome-shell-extension-blur-my-shell",
+            ])
+            .status()
+            .unwrap();
+    });
+    thread.join().unwrap();
 }
 #[tauri::command]
 fn remove_startup_desktopentry() {

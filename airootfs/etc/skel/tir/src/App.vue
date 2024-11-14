@@ -59,6 +59,9 @@ let user = "";
 async function the_rest() {
     document.getElementById("action").innerHTML =
         "Installing additional software...";
+    document.getElementById("password").remove();
+    document.getElementById("passwordconfirm").remove();
+    document.getElementById("confirmbtn").remove();
     await invoke("monolithic_the_rest", { user: user });
 }
 function pick_sys_partition() {
@@ -363,9 +366,6 @@ listen("gputrigger", async () => {
             await invoke("exit");
         }
     }
-    document.getElementById("password").remove();
-    document.getElementById("passwordconfirm").remove();
-    document.getElementById("confirmbtn").remove();
     document.getElementById("action").innerHTML =
         "What graphics card do you use?";
     document.body.innerHTML =
