@@ -259,6 +259,10 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
             .emit("failed", ())
             .unwrap(),
     }
+    match fs::copy("/home/live/Logo.svg", "/mnt/usr/share/pixmaps/renos.svg") {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
     let cmd = Command::new("arch-chroot")
         .args(["/mnt", "systemctl", "enable", "gdm"])
         .status()
