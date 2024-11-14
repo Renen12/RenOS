@@ -51,7 +51,7 @@ async fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
     };
     probe_cmd_err(cmd, &app);
     let app_mutex = Mutex::new(app.clone());
-    thread::spawn(move || {
+    let thread = thread::spawn(move || {
         let cmd = match Command::new("arch-chroot")
             .args(["/mnt", "sh", "-c", "pacman -Qqn | pacman -S - --noconfirm"])
             .status()
@@ -80,6 +80,8 @@ async fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
         };
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
     });
+    thread.join().unwrap();
+    reboot();
 }
 #[tauri::command]
 fn exit(app: AppHandle) {

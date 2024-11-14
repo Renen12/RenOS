@@ -45,7 +45,6 @@ async function reset_renos() {
                 syspart: restorepartitions["syspart"],
                 efipart: restorepartitions["efipart"],
             });
-            await invoke("reboot");
         };
     };
 }
