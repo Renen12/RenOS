@@ -39,6 +39,7 @@ check_internet();
 document.getElementById("additional").innerHTML =
     "Please wait while non-essential improvements are being applied to RenOS...";
 async function install_other() {
+    await check_internet();
     await invoke("install_other").then(async () => {
         document.getElementById("additional").innerHTML =
             "Select the additional software you want below:";
