@@ -44,9 +44,8 @@ async function reset_renos() {
             await invoke("restore_renos", {
                 syspart: restorepartitions["syspart"],
                 efipart: restorepartitions["efipart"],
-            }).then(async () => {
-                await invoke("reboot");
             });
+            await invoke("reboot");
         };
     };
 }
