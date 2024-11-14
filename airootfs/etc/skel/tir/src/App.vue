@@ -369,12 +369,11 @@ listen("gputrigger", async () => {
         "What graphics card do you use?";
     document.body.innerHTML =
         document.body.innerHTML +
-        `<button id="intel" type="button">Intel</button> <button id="nvidia" type="button">Nvidia</button> <button id="amd" type="button">AMD</button> <button id="nvidia-old" type="button"> Nvidia(Maxwell to lovelace(older graphics cards)) </button> `;
+        `<button id="intel" type="button">Intel</button> <button id="nvidia" type="button">Nvidia</button> <button id="amd" type="button">AMD</button> `;
     function prepareforgpuwaiting() {
         document.getElementById("nvidia").remove();
         document.getElementById("amd").remove();
         document.getElementById("intel").remove();
-        document.getElementById("nvidia-old").remove();
         document.getElementById("action").innerHTML =
             "Please wait for the graphics card drivers to be installed...";
     }
@@ -382,13 +381,6 @@ listen("gputrigger", async () => {
         prepareforgpuwaiting();
         await invoke("intel_graphics");
         await invoke("set_config_perms", { user: user });
-        reboot();
-    };
-    document.getElementById("nvidia-old").onclick = async () => {
-        prepareforgpuwaiting();
-        await invoke("nvidia_old");
-        await invoke("set_config_perms", { user: user });
-
         reboot();
     };
     document.getElementById("nvidia").onclick = async () => {

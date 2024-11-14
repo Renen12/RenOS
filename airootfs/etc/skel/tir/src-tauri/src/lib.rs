@@ -136,26 +136,6 @@ async fn nvidia_graphics(app: AppHandle) {
     thread.join().unwrap();
 }
 #[tauri::command]
-async fn nvidia_old(app: AppHandle) {
-    let app = Mutex::new(app);
-    let thread = thread::spawn(move || {
-        let cmd = Command::new("arch-chroot")
-            .args([
-                "/mnt",
-                "pacman",
-                "-S",
-                "nvidia",
-                "nvidia-utils",
-                "vulkan-icd-loader",
-                "--noconfirm",
-            ])
-            .status()
-            .expect("Failed to install Nvidia graphics drivers");
-        probe_cmd_err(cmd, &app.lock().unwrap());
-    });
-    thread.join().unwrap();
-}
-#[tauri::command]
 async fn amd_graphics(app: AppHandle) {
     let app = Mutex::new(app);
     let thread = thread::spawn(move || {
@@ -776,7 +756,6 @@ pub fn run() {
             reboot,
             exit,
             set_config_perms,
-            nvidia_old,
             return_partitions,
             restore_renos
         ])
