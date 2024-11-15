@@ -41,6 +41,8 @@ async function reset_renos() {
             restorepartitions["efipart"] = selected;
             document.getElementById("action").innerHTML =
                 "Please wait while RenOS is being reset...";
+            document.getElementById("partitions").remove();
+            document.getElementById("confirm").remove();
             await invoke("restore_renos", {
                 syspart: restorepartitions["syspart"],
                 efipart: restorepartitions["efipart"],

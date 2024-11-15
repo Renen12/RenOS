@@ -79,6 +79,33 @@ async fn restore_renos(syspart: String, efipart: String, app: AppHandle) {
             }
         };
         probe_cmd_err(cmd, &app_mutex.lock().unwrap());
+        match fs::copy("/etc/os-release", "/mnt/etc/os-release") {
+            Ok(_) => (),
+            Err(_) => {
+                app.get_webview_window("main")
+                    .unwrap()
+                    .emit("failed", ())
+                    .unwrap();
+            }
+        };
+        match fs::write(
+            "/mnt/etc/lsb-release",
+            "DISTRIB_ID=\"renos\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
+        ) {
+            Ok(_) => (),
+            Err(_) => app
+                .get_webview_window("main")
+                .unwrap()
+                .emit("failed", ())
+                .unwrap(),
+        }
+        match fs::copy(
+            "/home/live/RenOS.svg",
+            "/mnt/usr/share/pixmaps/archlinux-logo-text-dark.svg",
+        ) {
+            Ok(_) => (),
+            Err(_) => emit_err(&app),
+        }
     });
     thread.join().unwrap();
     reboot();
