@@ -101,6 +101,17 @@ fn remove_startup_desktopentry() {
         .status()
         .unwrap();
 }
+#[tauri::command]
+async fn gdm_logo_fix() {
+    Command::new("pkexec")
+        .args([
+            "--user",
+            "gdm",
+            "dbus-launch gsettings set org.gnome.login-screen logo '/usr/share/pixmaps/RenOS.svg'",
+        ])
+        .status()
+        .unwrap();
+}
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -112,7 +123,8 @@ pub fn run() {
             has_internet,
             backend_msg,
             remove_startup_desktopentry,
-            install_other
+            install_other,
+            gdm_logo_fix
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

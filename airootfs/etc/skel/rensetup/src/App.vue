@@ -32,6 +32,7 @@ async function check_internet() {
         alert(
             "An internet connection is required to install additional software. Please connect to the internet and try again!",
         );
+        return false;
     }
     return true;
 }
@@ -42,6 +43,7 @@ document.getElementById("additional").innerHTML =
 async function install_other() {
     while ((await check_internet()) != true) {
         await invoke("install_other").then(async () => {
+            await invoke("gdm_logo_fix");
             document.getElementById("additional").innerHTML =
                 "Select the additional software you want below:";
         });
