@@ -1,7 +1,0 @@
-[package]
-name = "tir"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-concatenator = "0.1.1"
