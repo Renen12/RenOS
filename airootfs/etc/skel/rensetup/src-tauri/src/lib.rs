@@ -1,5 +1,6 @@
 use std::{
     env,
+    fs::read_dir,
     io::{self, Write},
     process::Command,
     thread,
@@ -60,23 +61,34 @@ async fn install_other() {
             .status()
             .expect("Failed to install rust");
         Command::new("sh").args([ "-c", format!("cd /home/{}/.local/renos && git clone https://aur.archlinux.org/paru && cd paru && makepkg -s --noconfirm", &user).as_str()]).status().expect("Failed to install the arch linux user repository helper");
-        Command::new("sh")
-            .args([
-                "-c",
-                format!(
-                    "cd /home/{}/.local/renos/paru && pwd && ls && pkexec pacman -U *.pkg.tar.zst --noconfirm",
-                    &user
-                )
-                .as_str(),
-            ])
-            .status()
-            .expect("Failed to install the aur helper");
+        for file in read_dir(format!("/home/{}/.local/renos/paru", &user)).unwrap() {
+            let file = file.unwrap();
+            let name = file.file_name();
+            if name.clone().into_string().unwrap().contains(".pkg.tar.zst") {
+                Command::new("pkexec")
+                    .args([
+                        "pacman",
+                        "-U",
+                        format!(
+                            "/home/{}/.local/renos/paru/{}",
+                            &user,
+                            name.into_string().unwrap()
+                        )
+                        .as_str(),
+                        "--noconfirm",
+                    ])
+                    .status()
+                    .unwrap();
+            }
+        }
         Command::new("paru")
             .args([
                 "-S",
                 "zed-preview-bin",
                 "gnome-shell-extension-clipboard-indicator",
                 "gnome-shell-extension-blur-my-shell",
+                "gnome-shell-extension-appindicator-git",
+                "--noconfirm",
             ])
             .status()
             .unwrap();
