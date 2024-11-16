@@ -64,7 +64,7 @@ async fn install_other() {
             .args([
                 "-c",
                 format!(
-                    "cd /home/{}/.local/renos/paru && pkexec pacman -U *.pkg.tar.zst --noconfirm",
+                    "cd /home/{}/.local/renos/paru && pwd && ls && pkexec pacman -U *.pkg.tar.zst --noconfirm",
                     &user
                 )
                 .as_str(),
