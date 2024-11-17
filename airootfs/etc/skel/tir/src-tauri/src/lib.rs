@@ -257,17 +257,6 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
         Ok(_) => (),
         Err(_) => emit_err(&app),
     }
-    match fs::write(
-        "/mnt/etc/lsb-release",
-        "DISTRIB_ID=\"renos\" \n DISTRIB_RELEASE=\"rolling\" \n DISTRIB_DESCRIPTION=\"RenOS\"",
-    ) {
-        Ok(_) => (),
-        Err(_) => app
-            .get_webview_window("main")
-            .unwrap()
-            .emit("failed", ())
-            .unwrap(),
-    }
     match fs::copy("/home/live/Logo.svg", "/mnt/usr/share/pixmaps/renos.svg") {
         Ok(_) => (),
         Err(_) => emit_err(&app),
