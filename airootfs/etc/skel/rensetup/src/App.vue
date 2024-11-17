@@ -37,14 +37,12 @@ async function check_internet() {
 // Install additional software
 document.getElementById("additional").innerHTML =
     "Please wait while non-essential improvements are being applied to RenOS...";
-document.getElementById("continue").disabled = true;
 async function install_other() {
     await check_internet().then(async () => {
         await invoke("install_other").then(async () => {
             await invoke("gdm_logo_fix");
             document.getElementById("additional").innerHTML =
                 "Select the additional software you want below:";
-            document.getElementById("continue").disabled = false;
         });
     });
 }
