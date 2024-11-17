@@ -84,6 +84,8 @@ async fn install_other() {
         Command::new("paru")
             .args([
                 "-S",
+                "--sudo",
+                "pkexec",
                 "zed-preview-bin",
                 "gnome-shell-extension-clipboard-indicator",
                 "gnome-shell-extension-blur-my-shell",

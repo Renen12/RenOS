@@ -588,7 +588,7 @@ async fn install_system(rootpart: String, efipart: String, swappart: String, app
     let thread = thread::spawn(move || {
         let mut install_cmd = match Command::new("pacstrap")
             .args([
-                "-K",
+                "-PK",
                 "/mnt",
                 "base",
                 "linux",
