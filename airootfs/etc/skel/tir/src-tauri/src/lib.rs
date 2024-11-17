@@ -507,6 +507,17 @@ fn create_user(user: String, app: AppHandle) {
         )
         .unwrap()
     );
+    // Arch Linux base-devel developers, please make sudo not a dependency of base-devel.
+    let mut cmd = Command::new("arch-chroot")
+        .args([
+            "/mnt",
+            "sh",
+            "-c",
+            "echo   %wheel    ALL=(ALL)   ALL >> /etc/sudoers",
+        ])
+        .spawn()
+        .unwrap();
+    cmd.wait().unwrap();
 }
 #[tauri::command]
 fn return_partitions(app: AppHandle) -> Vec<String> {

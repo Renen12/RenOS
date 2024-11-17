@@ -34,7 +34,6 @@ async function check_internet() {
         );
     }
 }
-check_internet();
 // Install additional software
 document.getElementById("additional").innerHTML =
     "Please wait while non-essential improvements are being applied to RenOS...";
