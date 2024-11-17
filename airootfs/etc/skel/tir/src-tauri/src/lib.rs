@@ -513,7 +513,7 @@ fn create_user(user: String, app: AppHandle) {
             "/mnt",
             "sh",
             "-c",
-            "echo   \"%wheel    ALL=(ALL)   ALL >> /etc/sudoers\"",
+            "echo   \"%wheel    ALL=(ALL)   ALL \" >> /etc/sudoers",
         ])
         .spawn()
         .unwrap();
