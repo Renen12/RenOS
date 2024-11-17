@@ -650,6 +650,10 @@ async fn install_system(rootpart: String, efipart: String, swappart: String, app
         .args(["-c", "genfstab -U /mnt >> /mnt/etc/fstab"])
         .status()
         .expect("Failed writing to the fstab");
+    Command::new("chmod")
+        .args(["644", "/mnt/etc/pacman.conf"])
+        .status()
+        .unwrap();
     probe_cmd_err(cmd, &app);
     app.get_webview_window("main")
         .unwrap()

@@ -315,6 +315,13 @@ listen("languageselection", (_) => {
             }
         });
         function proceed() {
+            if (
+                document.getElementById("searchinput").value.replace(" ", "") ==
+                ""
+            ) {
+                alert("You can't search for an empty term.");
+                return;
+            }
             let elems = document.querySelectorAll("li");
             elems.forEach((item) => {
                 item.remove();

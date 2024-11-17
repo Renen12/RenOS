@@ -121,7 +121,12 @@ async fn gdm_logo_fix() {
         .args([
             "--user",
             "gdm",
-            "dbus-launch gsettings set org.gnome.login-screen logo '/usr/share/pixmaps/RenOS.svg'",
+            "dbus-launch",
+            "gsettings",
+            "set",
+            "org.gnome.login-screen",
+            "logo",
+            "'/usr/share/pixmaps/RenOS.svg'",
         ])
         .status()
         .unwrap();
