@@ -261,6 +261,31 @@ async fn monolithic_the_rest(user: String, app: AppHandle) {
         Ok(_) => (),
         Err(_) => emit_err(&app),
     }
+    match fs::copy(
+        "/home/live/.local/bin/rensoftware",
+        format!("/home/{}/.local/bin/rensoftware", user),
+    ) {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
+    match fs::create_dir_all(format!("/home/{}/.local/share/icons", user)) {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
+    match fs::copy(
+        "/home/live/.local/share/icons/rensoftware.svg",
+        format!("/home/{}/.local/share/icons/rensoftware.svg", user),
+    ) {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
+    match fs::copy(
+        "/home/live/.local/share/applications",
+        "rensoftware.desktop",
+    ) {
+        Ok(_) => (),
+        Err(_) => emit_err(&app),
+    }
     let cmd = Command::new("arch-chroot")
         .args(["/mnt", "systemctl", "enable", "gdm"])
         .status()
@@ -623,6 +648,7 @@ async fn install_system(rootpart: String, efipart: String, swappart: String, app
                 "icu",
                 "webkit2gtk-4.1",
                 "webkit2gtk",
+                "gnome-system-monitor",
             ])
             .spawn()
         {

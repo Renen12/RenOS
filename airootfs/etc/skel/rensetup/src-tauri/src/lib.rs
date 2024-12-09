@@ -126,7 +126,7 @@ async fn gdm_logo_fix() {
             "set",
             "org.gnome.login-screen",
             "logo",
-            "'/usr/share/pixmaps/RenOS.svg'",
+            "/usr/share/pixmaps/RenOS.svg",
         ])
         .status()
         .unwrap();

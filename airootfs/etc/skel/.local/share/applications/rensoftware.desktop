@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Icon=~/.local/share/icons/rensoftware.svg
+Name=RenOS software manager
+Name[en]=RenOS software manager
+Name[en_US]=RenOS software manager
+Name[en_US.UTF-8]=RenOS software manager
+Comment=RenOS software manager
+Comment[en]=RenOS software manager
+Comment[en_US]=RenOS software manager
+Comment[en_US.UTF-8]=RenOS software manager
+Categories=Development;Settings;System
+Exec=~/.local/bin/rensoftware
+Hidden=false
+NoDisplay=false
+StartupNotify=false
+Terminal=false
+
